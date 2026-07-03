@@ -29,6 +29,7 @@ export interface Product {
   price: number;
   label?: string;
   category: 'leggings' | 'shorts' | 'bras' | 'tops' | 'jackets';
+  gender: 'men' | 'women' | 'unisex';
   description: string;
   details: string[];
   variants: ProductVariant[];
@@ -43,6 +44,7 @@ export const products: Product[] = [
     price: 3599,
     label: 'NEW',
     category: 'leggings',
+    gender: 'women',
     description: 'Engineered with a high-performance compression waistband, our signature Contour Leggings naturally shape and lift your silhouette. Squat-proof, breathable, and finished with a seamless fit that acts like a second skin.',
     details: [
       '1.5cm higher waistband for added coverage',
@@ -108,6 +110,7 @@ export const products: Product[] = [
     price: 3799,
     label: 'NEW',
     category: 'leggings',
+    gender: 'women',
     description: 'Transition seamlessly from the studio to the street. The Aurora Flare Leggings combine high-waisted support with a chic flared hemline, making them as versatile as they are comfortable.',
     details: [
       'Flattering bootcut flare silhouette',
@@ -154,6 +157,7 @@ export const products: Product[] = [
     price: 2799,
     label: 'NEW',
     category: 'shorts',
+    gender: 'women',
     description: 'Our signature sculpting technology in a mid-thigh active short. Designed to stay in place, prevent riding up, and shape your curves during high-intensity training.',
     details: [
       '5-inch inseam prevents riding up',
@@ -191,6 +195,7 @@ export const products: Product[] = [
     name: 'Move Sports Bra',
     price: 2499,
     category: 'bras',
+    gender: 'women',
     description: 'Designed for medium-impact support, the Move Sports Bra features a classic scoop neckline and dynamic keyhole back design. Made from our premium sweat-wicking knit.',
     details: [
       'Medium support with removable cups',
@@ -237,6 +242,7 @@ export const products: Product[] = [
     name: 'Sculpt High-Waist Shorts 3"',
     price: 2599,
     category: 'shorts',
+    gender: 'women',
     description: 'A shorter 3-inch active cut designed for ultimate agility. Offers lightweight shape contouring, high compression, and clean aesthetic lines.',
     details: [
       '3-inch agile inseam length',
@@ -260,6 +266,7 @@ export const products: Product[] = [
     name: 'Elevate Sports Bra',
     price: 2299,
     category: 'bras',
+    gender: 'women',
     description: 'Lightweight support with delicate strap details, perfect for studio yoga, pilates, or casual lifestyle layering.',
     details: [
       'Lightweight breathable fabric',
@@ -272,6 +279,89 @@ export const products: Product[] = [
         hex: '#4A3546',
         image: '/images/product_plum_bra.png', // Fallback
         gallery: ['/images/product_plum_bra.png']
+      }
+    ],
+    reviews: [],
+    questions: []
+  },
+  {
+    id: 'mens-aeroweave-tee',
+    name: 'AeroWeave Training Tee',
+    price: 2999,
+    label: 'NEW',
+    category: 'tops',
+    gender: 'men',
+    description: 'Engineered with high-ventilation AeroWeave mesh, this lightweight training tee offers maximum breathability and sweat-wicking performance for high-intensity training sessions. Features an athletic ergonomic cut for zero distractions.',
+    details: [
+      'Ultra-lightweight AeroWeave mesh fabric',
+      'Sweat-wicking, quick-drying performance yarn',
+      'Four-way stretch for unrestricted arm movement',
+      'Flatlock seams prevent chafing during high intensity reps',
+      'Classic minimalist crewneck design'
+    ],
+    variants: [
+      {
+        colorName: 'Heather Grey',
+        hex: '#8C92AC',
+        image: '/images/product_mens_tee.png',
+        gallery: ['/images/product_mens_tee.png']
+      },
+      {
+        colorName: 'Obsidian Black',
+        hex: '#181818',
+        image: '/images/product_mens_shorts.png',
+        gallery: ['/images/product_mens_shorts.png']
+      }
+    ],
+    reviews: [],
+    questions: []
+  },
+  {
+    id: 'mens-apex-shorts',
+    name: 'Apex Pace Shorts',
+    price: 2799,
+    label: 'NEW',
+    category: 'shorts',
+    gender: 'men',
+    description: 'A high-performance running and training short designed for maximum pace. Built with lightweight, water-resistant stretch woven fabric, featuring laser-cut ventilation and a secure back zip pocket.',
+    details: [
+      'Lightweight, 4-way stretch woven performance shell',
+      'Laser-cut ventilation on side panels for cooling',
+      'Secure zippered back phone/key pocket',
+      'Comfort elastic waistband with interior drawstring',
+      'Moisture-wicking brief liner for added support'
+    ],
+    variants: [
+      {
+        colorName: 'Obsidian Black',
+        hex: '#181818',
+        image: '/images/product_mens_shorts.png',
+        gallery: ['/images/product_mens_shorts.png']
+      }
+    ],
+    reviews: [],
+    questions: []
+  },
+  {
+    id: 'mens-elements-jacket',
+    name: 'Elements Track Jacket',
+    price: 4599,
+    category: 'jackets',
+    gender: 'men',
+    description: 'All-weather protection engineered between air and earth. The Elements Track Jacket features water-resistant fabric, a full zip closure, adjustable hood, and zippered hand pockets.',
+    details: [
+      'Water-resistant, windproof breathable performance shell',
+      'Full-zip front closure with zipper garage',
+      'Adjustable hood with toggle adjustments',
+      'Zippered hand pockets and internal chest pocket',
+      'Elastic cuffs and drawcord hem for customized fit'
+    ],
+    variants: [
+      {
+        colorName: 'Charcoal Grey',
+        hex: '#3E4149',
+        image: '/images/product_mens_jacket.png',
+        gallery: ['/images/product_mens_jacket.png']
       }
     ],
     reviews: [],

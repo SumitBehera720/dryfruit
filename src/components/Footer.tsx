@@ -9,6 +9,7 @@ import {
   HelpCircle 
 } from 'lucide-react';
 import Link from 'next/link';
+import Logo from './Logo';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -111,7 +112,9 @@ export default function Footer() {
         
         {/* Brand Column */}
         <div className="lg:col-span-3 space-y-4">
-          <span className="text-2xl font-bold tracking-[0.25em] text-white">AERTH</span>
+          <Link href="/" className="block focus:outline-none" aria-label="AERTH Home">
+            <Logo className="h-6 text-white fill-none" />
+          </Link>
           <p className="text-xs text-zinc-400 tracking-wider font-light">Move with the Elements.</p>
           <div className="flex gap-4 pt-2">
             {socialLinks.map((social, idx) => (
@@ -132,11 +135,14 @@ export default function Footer() {
           <h4 className="text-xs font-bold uppercase tracking-[0.2em] mb-4 text-white">Shop</h4>
           <ul className="space-y-2 text-xs text-zinc-400 font-light tracking-widest uppercase">
             <li><Link href="/shop" className="hover:text-white transition-colors">All Products</Link></li>
-            <li><Link href="/shop?category=leggings" className="hover:text-white transition-colors">Leggings</Link></li>
-            <li><Link href="/shop?category=shorts" className="hover:text-white transition-colors">Shorts</Link></li>
-            <li><Link href="/shop?category=bras" className="hover:text-white transition-colors">Sports Bras</Link></li>
-            <li><Link href="/shop" className="hover:text-white transition-colors">Tops</Link></li>
-            <li><Link href="/shop" className="hover:text-white transition-colors">Accessories</Link></li>
+            <li className="pt-2 text-[10px] text-zinc-500 font-semibold tracking-wider">Women</li>
+            <li><Link href="/shop?gender=women&category=leggings" className="hover:text-white transition-colors">Leggings</Link></li>
+            <li><Link href="/shop?gender=women&category=shorts" className="hover:text-white transition-colors">Shorts</Link></li>
+            <li><Link href="/shop?gender=women&category=bras" className="hover:text-white transition-colors">Sports Bras</Link></li>
+            <li className="pt-2 text-[10px] text-zinc-500 font-semibold tracking-wider">Men</li>
+            <li><Link href="/shop?gender=men&category=tops" className="hover:text-white transition-colors">Training Tees</Link></li>
+            <li><Link href="/shop?gender=men&category=shorts" className="hover:text-white transition-colors">Apex Shorts</Link></li>
+            <li><Link href="/shop?gender=men&category=jackets" className="hover:text-white transition-colors">Track Jackets</Link></li>
           </ul>
         </div>
 

@@ -16,6 +16,7 @@ import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import { useCart } from '../../../context/CartContext';
 import { products, Review, Question } from '../../../data/products';
+import SizeFinder from '../../../components/SizeFinder';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -253,8 +254,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400">
                   Size: <span className="text-black">{selectedSize}</span>
                 </span>
-                <button className="text-[10px] uppercase tracking-widest text-zinc-500 hover:text-black font-semibold underline">
-                  Size Guide
+                <button 
+                  onClick={() => document.getElementById('smart-fit-finder')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="text-[10px] uppercase tracking-[0.15em] text-zinc-500 hover:text-black font-semibold underline focus:outline-none"
+                >
+                  Smart Fit Finder
                 </button>
               </div>
               <div className="flex gap-2">
@@ -345,6 +349,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           </div>
 
         </section>
+
+        {/* Size Finder Section */}
+        <div id="smart-fit-finder" className="border-t border-zinc-100">
+          <SizeFinder onSizeSelect={(size) => setSelectedSize(size)} />
+        </div>
 
         {/* Similar Products Carousel */}
         {similarProducts.length > 0 && (

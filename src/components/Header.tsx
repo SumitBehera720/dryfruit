@@ -6,6 +6,7 @@ import { Menu, X, Search, User, ShoppingBag, Plus, Minus, Trash2 } from 'lucide-
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import Logo from './Logo';
 
 export default function Header() {
   const { cart, cartCount, cartTotal, isOpen, setIsOpen, updateQuantity, removeFromCart } = useCart();
@@ -30,19 +31,35 @@ export default function Header() {
     <>
       {/* Main Header */}
       <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-zinc-100 z-40 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 md:h-20 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 md:h-20 flex justify-between items-center relative">
           
           {/* Left Navigation */}
           <div className="hidden md:flex items-center gap-8 font-medium text-sm tracking-widest text-zinc-900">
             <Link href="/" className="hover:text-zinc-600 transition-colors uppercase">Home</Link>
+            
+            {/* Women Dropdown */}
             <div className="relative group cursor-pointer">
-              <Link href="/shop" className="hover:text-zinc-600 transition-colors uppercase flex items-center gap-1">
-                Collections <span className="text-[8px]">▼</span>
+              <Link href="/shop?gender=women" className="hover:text-zinc-600 transition-colors uppercase flex items-center gap-1">
+                Women <span className="text-[8px]">▼</span>
               </Link>
               <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-zinc-100 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 py-2">
-                <Link href="/shop?category=leggings" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Sculpting Line</Link>
-                <Link href="/shop?category=shorts" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Summer Drop</Link>
-                <Link href="/shop" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">All Weather</Link>
+                <Link href="/shop?gender=women" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">All Women</Link>
+                <Link href="/shop?gender=women&category=leggings" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Sculpting Line</Link>
+                <Link href="/shop?gender=women&category=shorts" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Summer Drop</Link>
+                <Link href="/shop?gender=women&category=bras" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Sports Bras</Link>
+              </div>
+            </div>
+
+            {/* Men Dropdown */}
+            <div className="relative group cursor-pointer">
+              <Link href="/shop?gender=men" className="hover:text-zinc-600 transition-colors uppercase flex items-center gap-1">
+                Men <span className="text-[8px]">▼</span>
+              </Link>
+              <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-zinc-100 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 py-2">
+                <Link href="/shop?gender=men" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">All Men</Link>
+                <Link href="/shop?gender=men&category=tops" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Training Tees</Link>
+                <Link href="/shop?gender=men&category=shorts" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Apex Shorts</Link>
+                <Link href="/shop?gender=men&category=jackets" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Track Jackets</Link>
               </div>
             </div>
           </div>
@@ -56,9 +73,9 @@ export default function Header() {
           </button>
 
           {/* Center Logo */}
-          <div className="flex-1 md:flex-none text-center">
-            <Link href="/" className="text-2xl md:text-3xl font-bold tracking-[0.25em] text-black font-sans uppercase">
-              AERTH
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+            <Link href="/" className="block focus:outline-none" aria-label="AERTH Home">
+              <Logo className="h-6 md:h-7 text-black fill-none" />
             </Link>
           </div>
 
@@ -161,7 +178,9 @@ export default function Header() {
             >
               <div>
                 <div className="flex justify-between items-center mb-10">
-                  <div className="text-xl font-bold tracking-[0.2em] uppercase">AERTH</div>
+                  <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="block focus:outline-none">
+                    <Logo className="h-5 text-black fill-none" />
+                  </Link>
                   <button 
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="p-1 hover:bg-zinc-100 rounded-full"
@@ -171,7 +190,9 @@ export default function Header() {
                 </div>
                 <div className="flex flex-col gap-6 text-lg font-medium tracking-widest uppercase text-zinc-900 mt-8">
                   <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">Home</Link>
-                  <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">Collections</Link>
+                  <Link href="/shop?gender=women" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">Shop Women</Link>
+                  <Link href="/shop?gender=men" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">Shop Men</Link>
+                  <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">All Products</Link>
                   <Link href="/#about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">About</Link>
                   <Link href="/#journal" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">Journal</Link>
                 </div>

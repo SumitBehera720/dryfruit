@@ -135,6 +135,64 @@ export default function ClientSpotlight() {
           </motion.div>
         </div>
 
+        {/* Spotlight 3: Men's Elite Series */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+          {/* Left Column: Image */}
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="lg:col-span-7 relative aspect-[1.25/1] w-full rounded-2xl overflow-hidden bg-zinc-900 shadow-2xl border border-zinc-800"
+          >
+            <Image 
+              src="/images/product_mens_tee.png" 
+              alt="AERTH Men's AeroWeave Tee & Apex Shorts"
+              fill
+              sizes="(max-w-1024px) 100vw, 60vw"
+              className="object-cover object-center"
+            />
+          </motion.div>
+
+          {/* Right Column: Text & Swatches */}
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="lg:col-span-5 space-y-6"
+          >
+            <div>
+              <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">MENS HIGH-PERFORMANCE</span>
+              <h3 className="text-2xl md:text-3xl font-bold uppercase tracking-widest text-white mt-2 leading-tight">
+                Men&apos;s Elite Series
+              </h3>
+            </div>
+            
+            <p className="text-zinc-400 text-xs md:text-sm font-light leading-relaxed tracking-wider">
+              Engineered with our proprietary AeroWeave mesh and lightweight 4-way stretch fabrics. Experience unrestricted movement, maximum ventilation, and sharp minimalist styling built to withstand the toughest training sessions.
+            </p>
+
+            <div className="flex gap-3 items-center">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Colors:</span>
+              <div className="flex gap-2">
+                <span className="w-5 h-5 rounded-full border border-white/20 bg-[#8C92AC]" title="Heather Grey" />
+                <span className="w-5 h-5 rounded-full border border-white/20 bg-[#181818]" title="Obsidian Black" />
+                <span className="w-5 h-5 rounded-full border border-white/20 bg-[#3E4149]" title="Charcoal Grey" />
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <Link 
+                href="/shop?gender=men" 
+                className="inline-block bg-white hover:bg-zinc-100 text-black font-bold text-xs uppercase tracking-widest px-8 py-4 transition-all duration-300 shadow-md hover:shadow-lg"
+              >
+                Shop Men&apos;s Collection
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+
       </div>
     </section>
   );

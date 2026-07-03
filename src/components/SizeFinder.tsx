@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Scale, Ruler, Heart } from 'lucide-react';
 
-export default function SizeFinder() {
+export default function SizeFinder({ onSizeSelect }: { onSizeSelect?: (size: string) => void }) {
   const [height, setHeight] = useState(165); // in cm
   const [weight, setWeight] = useState(60);  // in kg
   const [fitPref, setFitPref] = useState<'tight' | 'regular' | 'loose'>('regular');
@@ -39,8 +39,12 @@ export default function SizeFinder() {
         idx += 1;
       }
       
-      setResult(sizes[idx]);
+      const recommendedSize = sizes[idx];
+      setResult(recommendedSize);
       setCalculating(false);
+      if (onSizeSelect) {
+        onSizeSelect(recommendedSize);
+      }
     }, 800);
   };
 

@@ -17,7 +17,51 @@ export default function PageLoader() {
     return () => clearTimeout(timer);
   }, [pathname]);
 
-  const logoWords = Array.from('AERTH');
+  const logoLetters = [
+    {
+      viewBox: '0 0 40 40',
+      path: <path d="M 8,35 L 20,5 L 32,35" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+    },
+    {
+      viewBox: '0 0 32 40',
+      path: (
+        <>
+          <path d="M 4,7 L 28,7" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+          <path d="M 4,20 L 28,20" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+          <path d="M 4,33 L 28,33" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+        </>
+      )
+    },
+    {
+      viewBox: '0 0 34 40',
+      path: (
+        <>
+          <path d="M 4,5 L 4,35" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+          <path d="M 12,5 L 22,5 C 28,5 28,20 22,20 L 12,20" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+          <path d="M 18,20 L 27,35" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+        </>
+      )
+    },
+    {
+      viewBox: '0 0 32 40',
+      path: (
+        <>
+          <path d="M 2,5 L 30,5" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+          <path d="M 16,5 L 16,35" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+        </>
+      )
+    },
+    {
+      viewBox: '0 0 36 40',
+      path: (
+        <>
+          <path d="M 5,5 L 5,35" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+          <path d="M 31,5 L 31,35" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+          <path d="M 5,20 L 31,20" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+        </>
+      )
+    }
+  ];
 
   const containerVariants = {
     initial: {},
@@ -59,16 +103,17 @@ export default function PageLoader() {
             variants={containerVariants}
             initial="initial"
             animate="animate"
-            className="flex items-center gap-1.5 md:gap-3"
+            className="flex items-center gap-4 md:gap-6"
           >
-            {logoWords.map((letter, idx) => (
-              <motion.span
+            {logoLetters.map((letter, idx) => (
+              <motion.svg
                 key={idx}
                 variants={letterVariants}
-                className="text-4xl md:text-6xl font-bold tracking-[0.25em] uppercase font-sans"
+                viewBox={letter.viewBox}
+                className="h-10 w-8 md:h-14 md:w-11 text-white fill-none stroke-white"
               >
-                {letter}
-              </motion.span>
+                {letter.path}
+              </motion.svg>
             ))}
           </motion.div>
 

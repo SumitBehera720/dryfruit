@@ -13,12 +13,21 @@ export default function ShopPage() {
   const { addToCart } = useCart();
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedGender, setSelectedGender] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('featured');
   const [activeVariants, setActiveVariants] = useState<Record<string, number>>({});
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    
+    // Parse URL search parameters safely on the client
+    const params = new URLSearchParams(window.location.search);
+    const gender = params.get('gender');
+    const category = params.get('category');
+    if (gender) setSelectedGender(gender);
+    if (category) setSelectedCategory(category);
+    
     // Initialize default active variant index to 0 for all products
     const defaults: Record<string, number> = {};
     products.forEach((p) => {
@@ -26,6 +35,11 @@ export default function ShopPage() {
     });
     setActiveVariants(defaults);
   }, []);
+
+  const handleGenderChange = (gender: string) => {
+    setSelectedGender(gender);
+    setSelectedCategory('all');
+  };
 
   const handleSwatchClick = (productId: string, variantIndex: number) => {
     setActiveVariants((prev) => ({
@@ -56,8 +70,9 @@ export default function ShopPage() {
 
   // Filter & Sort Logic
   const filteredProducts = products.filter((p) => {
-    if (selectedCategory === 'all') return true;
-    return p.category === selectedCategory;
+    const matchesGender = selectedGender === 'all' || p.gender === selectedGender;
+    const matchesCategory = selectedCategory === 'all' || p.category === selectedCategory;
+    return matchesGender && matchesCategory;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -66,12 +81,28 @@ export default function ShopPage() {
     return 0; // Featured/Default
   });
 
-  const categories = [
-    { value: 'all', label: 'All Products' },
-    { value: 'leggings', label: 'Leggings' },
-    { value: 'shorts', label: 'Shorts' },
-    { value: 'bras', label: 'Sports Bras' }
-  ];
+  const categories = selectedGender === 'men' 
+    ? [
+        { value: 'all', label: 'All Men' },
+        { value: 'tops', label: 'Training Tees' },
+        { value: 'shorts', label: 'Apex Shorts' },
+        { value: 'jackets', label: 'Track Jackets' }
+      ]
+    : selectedGender === 'women'
+    ? [
+        { value: 'all', label: 'All Women' },
+        { value: 'leggings', label: 'Leggings' },
+        { value: 'shorts', label: 'Shorts' },
+        { value: 'bras', label: 'Sports Bras' }
+      ]
+    : [
+        { value: 'all', label: 'All Products' },
+        { value: 'leggings', label: 'Leggings' },
+        { value: 'shorts', label: 'Shorts' },
+        { value: 'bras', label: 'Sports Bras' },
+        { value: 'tops', label: 'Training Tees' },
+        { value: 'jackets', label: 'Track Jackets' }
+      ];
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -93,6 +124,28 @@ export default function ShopPage() {
         {/* Filter and Content Grid */}
         <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
           
+          {/* Gender Tabs */}
+          <div className="flex gap-8 border-b border-zinc-100 pb-3 mb-8">
+            {[
+              { value: 'all', label: 'All Collections' },
+              { value: 'women', label: 'Women' },
+              { value: 'men', label: 'Men' }
+            ].map((gender) => (
+              <button
+                key={gender.value}
+                onClick={() => handleGenderChange(gender.value)}
+                className={`text-xs md:text-sm uppercase tracking-[0.2em] font-bold pb-2 transition-all duration-200 relative focus:outline-none ${
+                  selectedGender === gender.value ? 'text-black' : 'text-zinc-400 hover:text-zinc-600'
+                }`}
+              >
+                {gender.label}
+                {selectedGender === gender.value && (
+                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
+                )}
+              </button>
+            ))}
+          </div>
+
           {/* Controls Bar */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-100 pb-6 mb-8 gap-4">
             <div className="flex flex-wrap gap-2">

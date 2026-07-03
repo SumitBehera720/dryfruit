@@ -8,7 +8,6 @@ import PressMarquee from '../components/PressMarquee';
 import BestSellers from '../components/BestSellers';
 import ClientSpotlight from '../components/ClientSpotlight';
 import Infographic from '../components/Infographic';
-import SizeFinder from '../components/SizeFinder';
 import BrandStory from '../components/BrandStory';
 import Categories from '../components/Categories';
 import ClientReviewsMarquee from '../components/ClientReviewsMarquee';
@@ -26,7 +25,6 @@ export default function Home() {
         <BestSellers />
         <ClientSpotlight />
         <Infographic />
-        <SizeFinder />
         <BrandStory />
         <Categories />
         <ClientReviewsMarquee />

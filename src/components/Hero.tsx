@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 export default function Hero() {
   const images = [
@@ -100,12 +101,18 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="flex flex-wrap items-center gap-4 pt-2"
           >
-            <button className="bg-white text-black hover:bg-zinc-100 font-bold text-xs uppercase tracking-widest px-8 py-4 transition-all duration-300 shadow-lg hover:shadow-xl">
+            <Link 
+              href="/shop?gender=women" 
+              className="bg-white text-black hover:bg-zinc-100 font-bold text-xs uppercase tracking-widest px-8 py-4 transition-all duration-300 shadow-lg hover:shadow-xl text-center min-w-[160px]"
+            >
               Shop Women
-            </button>
-            <button className="border border-white/80 hover:border-white hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest px-8 py-4 transition-all duration-300">
-              Explore Collections
-            </button>
+            </Link>
+            <Link 
+              href="/shop?gender=men" 
+              className="border border-white/80 hover:border-white hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest px-8 py-4 transition-all duration-300 text-center min-w-[160px]"
+            >
+              Shop Men
+            </Link>
           </motion.div>
         </div>
       </div>
