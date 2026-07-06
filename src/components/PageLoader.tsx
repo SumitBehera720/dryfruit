@@ -20,15 +20,39 @@ export default function PageLoader() {
   const logoLetters = [
     {
       viewBox: '0 0 40 40',
-      path: <path d="M 8,35 L 20,5 L 32,35" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+      path: (
+        <>
+          <path d="M 8,35 L 20,5 L 32,35" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+          <path d="M 13.5,23 L 26.5,23" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+        </>
+      )
     },
     {
       viewBox: '0 0 32 40',
       path: (
         <>
-          <path d="M 4,7 L 28,7" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
-          <path d="M 4,20 L 28,20" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
-          <path d="M 4,33 L 28,33" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+          <defs>
+            <clipPath id="loader-globe-circle-clip">
+              <circle cx="16" cy="20" r="13.5" />
+            </clipPath>
+            <clipPath id="loader-globe-bars-clip">
+              <path d="M 4,7 L 28,7 M 4,20 L 28,20 M 4,33 L 28,33" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" />
+            </clipPath>
+          </defs>
+          {/* Solid background bars */}
+          <path d="M 4,7 L 28,7 M 4,20 L 28,20 M 4,33 L 28,33" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" />
+          
+          {/* Clipped globe overlay */}
+          <g clipPath="url(#loader-globe-circle-clip)">
+            <image 
+              href="/images/logo-globe.png" 
+              x="2.5" 
+              y="6.5" 
+              width="27" 
+              height="27" 
+              clipPath="url(#loader-globe-bars-clip)" 
+            />
+          </g>
         </>
       )
     },
@@ -36,9 +60,8 @@ export default function PageLoader() {
       viewBox: '0 0 34 40',
       path: (
         <>
-          <path d="M 4,5 L 4,35" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
-          <path d="M 12,5 L 22,5 C 28,5 28,20 22,20 L 12,20" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
-          <path d="M 18,20 L 27,35" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+          <path d="M 4,35 L 4,5 L 20,5 C 27,5 27,19 20,19 L 4,19" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
+          <path d="M 12,19 L 24,35" stroke="currentColor" strokeWidth="4.5" strokeLinecap="square" fill="none" />
         </>
       )
     },

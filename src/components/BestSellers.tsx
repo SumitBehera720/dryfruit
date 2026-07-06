@@ -19,7 +19,7 @@ export default function BestSellers() {
     'contour-leggings': 0,
     'aurora-flare-leggings': 0,
     'contour-shorts': 0,
-    'move-sports-bra': 0,
+    'mens-aeroweave-tee': 0,
   });
 
   const handleSwatchClick = (productId: string, variantIndex: number) => {

@@ -82,7 +82,7 @@ export default function Header() {
           {/* Right Navigation */}
           <div className="flex items-center gap-4 md:gap-6">
             <div className="hidden md:flex items-center gap-6 font-medium text-sm tracking-widest text-zinc-900 mr-4">
-              <Link href="/#about" className="hover:text-zinc-600 transition-colors uppercase">About</Link>
+              <Link href="/about" className="hover:text-zinc-600 transition-colors uppercase">About</Link>
               <Link href="/#journal" className="hover:text-zinc-600 transition-colors uppercase">Journal</Link>
             </div>
             
@@ -193,7 +193,7 @@ export default function Header() {
                   <Link href="/shop?gender=women" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">Shop Women</Link>
                   <Link href="/shop?gender=men" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">Shop Men</Link>
                   <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">All Products</Link>
-                  <Link href="/#about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">About</Link>
+                  <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">About</Link>
                   <Link href="/#journal" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">Journal</Link>
                 </div>
               </div>

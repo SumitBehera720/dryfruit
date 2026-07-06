@@ -150,11 +150,11 @@ export default function Footer() {
         <div className="lg:col-span-2">
           <h4 className="text-xs font-bold uppercase tracking-[0.2em] mb-4 text-white">Company</h4>
           <ul className="space-y-2 text-xs text-zinc-400 font-light tracking-widest uppercase">
-            <li><Link href="/#about" className="hover:text-white transition-colors">About Us</Link></li>
-            <li><Link href="/#about" className="hover:text-white transition-colors">Our Mission</Link></li>
-            <li><Link href="/#about" className="hover:text-white transition-colors">Sustainability</Link></li>
-            <li><Link href="/#about" className="hover:text-white transition-colors">Careers</Link></li>
-            <li><Link href="/#about" className="hover:text-white transition-colors">Contact Us</Link></li>
+            <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
+            <li><Link href="/about" className="hover:text-white transition-colors">Our Mission</Link></li>
+            <li><Link href="/about" className="hover:text-white transition-colors">Sustainability</Link></li>
+            <li><Link href="/about" className="hover:text-white transition-colors">Careers</Link></li>
+            <li><Link href="/about" className="hover:text-white transition-colors">Contact Us</Link></li>
           </ul>
         </div>
 

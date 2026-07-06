@@ -7,7 +7,7 @@ import TrustBadges from '../components/TrustBadges';
 import PressMarquee from '../components/PressMarquee';
 import BestSellers from '../components/BestSellers';
 import ClientSpotlight from '../components/ClientSpotlight';
-import Infographic from '../components/Infographic';
+// import Infographic from '../components/Infographic';
 import BrandStory from '../components/BrandStory';
 import Categories from '../components/Categories';
 import ClientReviewsMarquee from '../components/ClientReviewsMarquee';
@@ -24,7 +24,7 @@ export default function Home() {
         <PressMarquee />
         <BestSellers />
         <ClientSpotlight />
-        <Infographic />
+        {/* <Infographic /> */}
         <BrandStory />
         <Categories />
         <ClientReviewsMarquee />

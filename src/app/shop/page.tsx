@@ -9,6 +9,27 @@ import Footer from '../../components/Footer';
 import { useCart } from '../../context/CartContext';
 import { products, Product } from '../../data/products';
 
+const bannerData = {
+  all: {
+    image: '/images/banner_all.png',
+    title: 'All Collections',
+    subtitle: 'Collections',
+    desc: 'High-performance training gear designed to elevate your form. Engineered between air and earth.',
+  },
+  men: {
+    image: '/images/banner_men.png',
+    title: "Men's Collection",
+    subtitle: 'Men',
+    desc: 'Engineered for pace and breathability. Apex shorts and training tees built to sustain maximum effort.',
+  },
+  women: {
+    image: '/images/banner_women.png',
+    title: "Women's Collection",
+    subtitle: 'Women',
+    desc: 'Sculpting lines and high-performance compression waistbands designed to contour, lift, and support.',
+  },
+};
+
 export default function ShopPage() {
   const { addToCart } = useCart();
   const [wishlist, setWishlist] = useState<string[]>([]);
@@ -111,12 +132,27 @@ export default function ShopPage() {
       <main className="flex-1 font-sans">
         
         {/* Banner Section */}
-        <section className="w-full bg-[#0c0c0c] text-white py-12 md:py-16 text-center border-b border-zinc-900">
-          <div className="max-w-7xl mx-auto px-4">
-            <span className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-zinc-500 font-semibold">Collections</span>
-            <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-widest mt-2">All Products</h1>
-            <p className="text-zinc-400 text-xs md:text-sm mt-3 max-w-md mx-auto tracking-wide leading-relaxed font-light">
-              High-performance training gear designed to elevate your form. Engineered between air and earth.
+        <section className="w-full h-[260px] md:h-[340px] relative overflow-hidden flex items-center justify-center text-center text-white border-b border-zinc-900">
+          <div className="absolute inset-0 z-0">
+            <Image
+              src={bannerData[selectedGender as keyof typeof bannerData]?.image || bannerData.all.image}
+              alt={bannerData[selectedGender as keyof typeof bannerData]?.title || bannerData.all.title}
+              fill
+              priority
+              className="object-cover object-center brightness-[0.45] transition-all duration-700 ease-in-out scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/40 to-black/70" />
+          </div>
+          
+          <div className="max-w-7xl mx-auto px-4 relative z-10 space-y-3">
+            <span className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-zinc-400 font-bold block transition-all duration-500">
+              {bannerData[selectedGender as keyof typeof bannerData]?.subtitle || bannerData.all.subtitle}
+            </span>
+            <h1 className="text-3xl md:text-5xl font-extrabold uppercase tracking-widest leading-none mt-1 transition-all duration-500">
+              {bannerData[selectedGender as keyof typeof bannerData]?.title || bannerData.all.title}
+            </h1>
+            <p className="text-zinc-300 text-xs md:text-sm max-w-lg mx-auto tracking-widest font-light leading-relaxed uppercase transition-all duration-500 mt-2">
+              {bannerData[selectedGender as keyof typeof bannerData]?.desc || bannerData.all.desc}
             </p>
           </div>
         </section>
