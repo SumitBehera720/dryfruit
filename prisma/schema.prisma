@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  password     String
+  name         String
+  role         String   @default("admin")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Product {
+  id          Int              @id @default(autoincrement())
+  slug        String           @unique
+  name        String
+  price       Float
+  label       String?
+  category    String
+  gender      String
+  description String           @db.Text
+  active      Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  variants    ProductVariant[]
+  details     ProductDetail[]
+  reviews     Review[]
+  questions   Question[]
+}
+
+model ProductVariant {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  colorName String
+  hex       String
+  image     String
+  gallery   String  @default("[]")
+  stock     Int     @default(10)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductDetail {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  text      String
+  sortOrder Int    @default(0)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  author    String
+  rating    Int
+  date      DateTime @default(now())
+  title     String
+  comment   String   @db.Text
+  verified  Boolean  @default(false)
+  approved  Boolean  @default(false)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Question {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  user      String
+  question  String   @db.Text
+  date      DateTime @default(now())
+  answer    String?  @db.Text
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id           Int         @id @default(autoincrement())
+  customerName String
+  email        String
+  phone        String
+  address      String
+  city         String
+  state        String
+  pincode      String
+  total        Float
+  status       String      @default("pending")
+  paymentMethod String     @default("cod")
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  items        OrderItem[]
+}
+
+model OrderItem {
+  id          Int    @id @default(autoincrement())
+  orderId     Int
+  productName String
+  price       Float
+  quantity    Int
+  color       String
+  size        String
+  order       Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model NewsletterSubscriber {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  createdAt   DateTime @default(now())
+}
+
+model SiteSetting {
+  id    Int    @id @default(autoincrement())
+  key   String @unique
+  value String @db.Text
+}
+
+model ContentSection {
+  id         Int      @id @default(autoincrement())
+  page       String
+  section    String
+  title      String?
+  subtitle   String?
+  description String? @db.Text
+  image      String?
+  linkUrl    String?
+  linkText   String?
+  sortOrder  Int      @default(0)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model JournalPost {
+  id          Int      @id @default(autoincrement())
+  title       String
+  excerpt     String   @db.Text
+  author      String
+  category    String
+  date        DateTime @default(now())
+  image       String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  slug  String @unique
+  name  String
+  gender String @default("all")
+  sortOrder Int @default(0)
+}
+
+model Page {
+  id        Int      @id @default(autoincrement())
+  title     String
+  slug      String   @unique
+  content   String   @db.Text
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MenuItem {
+  id        Int        @id @default(autoincrement())
+  label     String
+  url       String?
+  pageSlug  String?
+  parentId  Int?
+  parent    MenuItem?  @relation("MenuHierarchy", fields: [parentId], references: [id])
+  children  MenuItem[] @relation("MenuHierarchy")
+  sortOrder Int        @default(0)
+  location  String     @default("main")
+  megaMenu  Boolean    @default(false)
+}

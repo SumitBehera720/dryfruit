@@ -2,75 +2,129 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
-import { Menu, X, Search, User, ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Menu, X, Search, User, ShoppingBag, Plus, Minus, Trash2, LogOut, LayoutDashboard } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import Logo from './Logo';
+import Globe from './Globe';
+
+interface MenuItem {
+  id: number;
+  label: string;
+  url: string | null;
+  pageSlug: string | null;
+  megaMenu: boolean;
+  location?: string;
+  children?: MenuItem[];
+}
 
 export default function Header() {
+  const router = useRouter();
   const { cart, cartCount, cartTotal, isOpen, setIsOpen, updateQuantity, removeFromCart } = useCart();
+  const { isAuthenticated, user, isAdmin, setShowAuthModal, logout } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
   useEffect(() => {
     setMounted(true);
+    Promise.allSettled([
+      fetch('/api/menu?location=main').then(async (r) => r.ok ? r.json() : []),
+      fetch('/api/menu?location=secondary').then(async (r) => r.ok ? r.json() : []),
+    ])
+      .then(([main, secondary]) => {
+        const mainItems = main.status === 'fulfilled' ? main.value : [];
+        const secondaryItems = secondary.status === 'fulfilled' ? secondary.value : [];
+        setMenuItems([...mainItems, ...secondaryItems.map((m: MenuItem) => ({ ...m, location: 'secondary' }))]);
+      })
+      .catch(() => {});
   }, []);
 
   const freeShippingThreshold = 3999;
   const remainingForFreeShipping = freeShippingThreshold - cartTotal;
 
-  // Mock checkout logic (Razorpay Simulation)
   const handleCheckout = () => {
-    alert(`Initializing checkout via Razorpay for ₹${cartTotal.toLocaleString('en-IN')}. This is a checkout integration preview.`);
+    setIsOpen(false);
+    router.push('/checkout');
   };
 
   return (
     <>
+
       {/* Main Header */}
       <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-zinc-100 z-40 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 md:h-20 flex justify-between items-center relative">
-          
-          {/* Left Navigation */}
-          <div className="hidden md:flex items-center gap-8 font-medium text-sm tracking-widest text-zinc-900">
-            <Link href="/" className="hover:text-zinc-600 transition-colors uppercase">Home</Link>
-            
-            {/* Women Dropdown */}
-            <div className="relative group cursor-pointer">
-              <Link href="/shop?gender=women" className="hover:text-zinc-600 transition-colors uppercase flex items-center gap-1">
-                Women <span className="text-[8px]">▼</span>
-              </Link>
-              <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-zinc-100 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 py-2">
-                <Link href="/shop?gender=women" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">All Women</Link>
-                <Link href="/shop?gender=women&category=leggings" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Sculpting Line</Link>
-                <Link href="/shop?gender=women&category=shorts" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Summer Drop</Link>
-                <Link href="/shop?gender=women&category=bras" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Sports Bras</Link>
-              </div>
-            </div>
+        {/* Desktop Globe (pushed close to device screen edge) */}
+        <div className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 z-50">
+          <Globe size={42} />
+        </div>
 
-            {/* Men Dropdown */}
-            <div className="relative group cursor-pointer">
-              <Link href="/shop?gender=men" className="hover:text-zinc-600 transition-colors uppercase flex items-center gap-1">
-                Men <span className="text-[8px]">▼</span>
-              </Link>
-              <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-zinc-100 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 py-2">
-                <Link href="/shop?gender=men" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">All Men</Link>
-                <Link href="/shop?gender=men&category=tops" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Training Tees</Link>
-                <Link href="/shop?gender=men&category=shorts" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Apex Shorts</Link>
-                <Link href="/shop?gender=men&category=jackets" className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">Track Jackets</Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile Menu Icon */}
+        {/* Mobile Menu Icon & Globe (pushed close to device screen edge) */}
+        <div className="flex md:hidden absolute left-3 top-1/2 -translate-y-1/2 items-center gap-1 z-50">
           <button 
-            className="md:hidden p-2 text-zinc-900 hover:text-zinc-600"
+            className="p-1 text-zinc-900 hover:text-zinc-600"
             onClick={() => setIsMobileMenuOpen(true)}
           >
             <Menu className="w-6 h-6" />
           </button>
+          <Globe size={28} />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 md:h-20 flex justify-between items-center relative">
+          
+          {/* Left Navigation */}
+          <div className="hidden md:flex items-center gap-6 font-medium text-sm tracking-widest text-zinc-900 pl-10">
+            <Link href="/" className="hover:text-zinc-600 transition-colors uppercase">Home</Link>
+            
+            {menuItems.map((item) => {
+              const href = item.url || (item.pageSlug ? `/${item.pageSlug}` : '/');
+              if (!item.children || item.children.length === 0) {
+                return (
+                  <Link key={item.id} href={href} className="hover:text-zinc-600 transition-colors uppercase">
+                    {item.label}
+                  </Link>
+                );
+              }
+              return (
+                <div key={item.id} className="relative group cursor-pointer">
+                  <Link href={href} className="hover:text-zinc-600 transition-colors uppercase flex items-center gap-1">
+                    {item.label} <span className="text-[8px]">▼</span>
+                  </Link>
+                  {item.megaMenu ? (
+                    <div className="absolute top-full left-0 mt-2 bg-white border border-zinc-100 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 py-4 px-6 w-[500px] grid grid-cols-2 gap-4">
+                      {item.children.map((child) => {
+                        const childHref = child.url || (child.pageSlug ? `/${child.pageSlug}` : '/');
+                        return (
+                          <Link key={child.id} href={childHref} className="block px-2 py-1.5 hover:bg-zinc-50 text-xs tracking-wider uppercase">
+                            {child.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-zinc-100 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 py-2">
+                      {item.children.map((child) => {
+                        const childHref = child.url || (child.pageSlug ? `/${child.pageSlug}` : '/');
+                        return (
+                          <Link key={child.id} href={childHref} className="block px-4 py-2 hover:bg-zinc-50 text-xs tracking-wider uppercase">
+                            {child.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Empty spacer for mobile layout alignment */}
+          <div className="w-16 md:hidden pointer-events-none" />
 
           {/* Center Logo */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
@@ -82,8 +136,14 @@ export default function Header() {
           {/* Right Navigation */}
           <div className="flex items-center gap-4 md:gap-6">
             <div className="hidden md:flex items-center gap-6 font-medium text-sm tracking-widest text-zinc-900 mr-4">
-              <Link href="/about" className="hover:text-zinc-600 transition-colors uppercase">About</Link>
-              <Link href="/#journal" className="hover:text-zinc-600 transition-colors uppercase">Journal</Link>
+              {menuItems.filter((m) => m.location === 'secondary').map((item) => {
+                const href = item.url || (item.pageSlug ? `/${item.pageSlug}` : '/');
+                return (
+                  <Link key={item.id} href={href} className="hover:text-zinc-600 transition-colors uppercase">
+                    {item.label}
+                  </Link>
+                );
+              })}
             </div>
             
             <button 
@@ -94,13 +154,41 @@ export default function Header() {
               <Search className="w-5 h-5 md:w-6 h-6 stroke-[1.5]" />
             </button>
             
-            <Link 
-              href="#" 
-              className="p-2 text-zinc-800 hover:text-zinc-600 transition-colors hidden sm:block"
-              aria-label="Account"
-            >
-              <User className="w-5 h-5 md:w-6 h-6 stroke-[1.5]" />
-            </Link>
+            <div className="relative hidden sm:block">
+              <button
+                onClick={() => isAuthenticated ? setIsUserMenuOpen(!isUserMenuOpen) : setShowAuthModal(true)}
+                className="p-2 text-zinc-800 hover:text-zinc-600 transition-colors"
+                aria-label="Account"
+              >
+                <User className="w-5 h-5 md:w-6 h-6 stroke-[1.5]" />
+              </button>
+              {isUserMenuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsUserMenuOpen(false)} />
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-zinc-100 shadow-xl rounded-xl z-50 py-2">
+                    <div className="px-4 py-2 border-b border-zinc-100">
+                      <p className="text-xs font-bold text-black">{user?.name}</p>
+                      <p className="text-[10px] text-zinc-500">{user?.email}</p>
+                    </div>
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-xs hover:bg-zinc-50 text-zinc-700 hover:text-black transition-colors"
+                      >
+                        <LayoutDashboard className="w-4 h-4" /> Admin Panel
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => { logout(); setIsUserMenuOpen(false); }}
+                      className="flex items-center gap-3 px-4 py-2.5 text-xs hover:bg-zinc-50 text-zinc-700 hover:text-red-600 transition-colors w-full"
+                    >
+                      <LogOut className="w-4 h-4" /> Sign Out
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
 
             <button 
               onClick={() => setIsOpen(true)}
@@ -190,20 +278,37 @@ export default function Header() {
                 </div>
                 <div className="flex flex-col gap-6 text-lg font-medium tracking-widest uppercase text-zinc-900 mt-8">
                   <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">Home</Link>
-                  <Link href="/shop?gender=women" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">Shop Women</Link>
-                  <Link href="/shop?gender=men" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">Shop Men</Link>
-                  <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">All Products</Link>
-                  <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">About</Link>
-                  <Link href="/#journal" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">Journal</Link>
+                  {menuItems.map((item) => {
+                    const href = item.url || (item.pageSlug ? `/${item.pageSlug}` : '/');
+                    return (
+                      <Link key={item.id} href={href} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-zinc-500">
+                        {item.label}
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
               
               <div className="border-t border-zinc-100 pt-6">
                 <p className="text-[10px] uppercase tracking-widest text-zinc-400 mb-2">My Account</p>
-                <div className="flex items-center gap-3 py-2 cursor-pointer hover:text-zinc-600">
-                  <User className="w-5 h-5 stroke-[1.5]" />
-                  <span className="text-sm tracking-widest uppercase">Sign In / Register</span>
-                </div>
+                {isAuthenticated ? (
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-black">{user?.name}</p>
+                    {isAdmin && (
+                      <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-2 text-xs hover:text-zinc-600 text-zinc-700">
+                        <LayoutDashboard className="w-4 h-4" /> Admin Panel
+                      </Link>
+                    )}
+                    <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="flex items-center gap-3 py-2 text-xs hover:text-red-600 text-zinc-700">
+                      <LogOut className="w-4 h-4" /> Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <div onClick={() => { setShowAuthModal(true); setIsMobileMenuOpen(false); }} className="flex items-center gap-3 py-2 cursor-pointer hover:text-zinc-600">
+                    <User className="w-5 h-5 stroke-[1.5]" />
+                    <span className="text-sm tracking-widest uppercase">Sign In / Register</span>
+                  </div>
+                )}
               </div>
             </motion.div>
           </>

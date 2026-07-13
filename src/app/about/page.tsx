@@ -83,7 +83,7 @@ export default function AboutPage() {
               className="object-cover object-center brightness-[0.4]"
             />
           </motion.div>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-[#09090b] z-5" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-[#09090b] z-10" />
 
           <motion.div 
             style={{ opacity: heroOpacity }}
@@ -264,7 +264,7 @@ export default function AboutPage() {
             >
               <Link 
                 href="/shop" 
-                className="inline-flex items-center gap-2 bg-white hover:bg-zinc-150 text-black font-bold text-xs uppercase tracking-widest px-10 py-5 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 rounded-xl"
+                className="inline-flex items-center gap-2 bg-white hover:bg-zinc-100 text-black font-bold text-xs uppercase tracking-widest px-10 py-5 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 rounded-xl"
               >
                 Browse Collections
                 <ArrowRight className="w-4 h-4 text-black" />

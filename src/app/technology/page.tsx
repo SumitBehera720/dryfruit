@@ -92,7 +92,7 @@ export default function TechnologyPage() {
                 <h3 className="text-sm md:text-base font-bold uppercase tracking-wider text-black">
                   {item.title}
                 </h3>
-                <p className="text-zinc-650 text-xs md:text-sm font-light leading-relaxed tracking-wide">
+                <p className="text-zinc-600 text-xs md:text-sm font-light leading-relaxed tracking-wide">
                   {item.desc}
                 </p>
               </motion.div>

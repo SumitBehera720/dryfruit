@@ -1,19 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "../context/CartContext";
+import { AuthProvider } from "../context/AuthContext";
 import { SmoothScrollProvider } from "../components/SmoothScrollProvider";
 import PageLoader from "../components/PageLoader";
-
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-});
-
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-});
+import AuthModal from "../components/AuthModal";
 
 export const metadata: Metadata = {
   title: "AERTH | Premium Sportswear & Activewear",
@@ -26,14 +17,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className="antialiased bg-white text-zinc-900 overflow-x-hidden">
-        <CartProvider>
-          <SmoothScrollProvider>
-            <PageLoader />
-            {children}
-          </SmoothScrollProvider>
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <SmoothScrollProvider>
+              <PageLoader />
+              <AuthModal />
+              {children}
+            </SmoothScrollProvider>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

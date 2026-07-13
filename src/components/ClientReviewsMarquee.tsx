@@ -38,7 +38,7 @@ export default function ClientReviewsMarquee() {
               key={`r1-${idx}`} 
               className="bg-white border border-zinc-200/80 rounded-2xl p-6 w-[280px] md:w-[320px] shadow-sm flex flex-col justify-between flex-shrink-0"
             >
-              <p className="text-zinc-650 text-xs md:text-sm font-light italic leading-relaxed tracking-wide">
+              <p className="text-zinc-600 text-xs md:text-sm font-light italic leading-relaxed tracking-wide">
                 &ldquo;{rev.comment}&rdquo;
               </p>
               
@@ -59,7 +59,7 @@ export default function ClientReviewsMarquee() {
               key={`r2-${idx}`} 
               className="bg-white border border-zinc-200/80 rounded-2xl p-6 w-[280px] md:w-[320px] shadow-sm flex flex-col justify-between flex-shrink-0"
             >
-              <p className="text-zinc-650 text-xs md:text-sm font-light italic leading-relaxed tracking-wide">
+              <p className="text-zinc-600 text-xs md:text-sm font-light italic leading-relaxed tracking-wide">
                 &ldquo;{rev.comment}&rdquo;
               </p>
               

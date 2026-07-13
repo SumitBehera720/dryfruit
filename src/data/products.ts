@@ -215,8 +215,8 @@ export const products: Product[] = [
       {
         colorName: 'Obsidian Black',
         hex: '#181818',
-        image: '/images/product_mens_shorts.png',
-        gallery: ['/images/product_mens_shorts.png']
+        image: '/images/product_mens_tee.png',
+        gallery: ['/images/product_mens_tee.png']
       }
     ],
     reviews: [],

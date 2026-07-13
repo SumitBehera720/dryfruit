@@ -16,15 +16,18 @@ export default function SizeFinder({ onSizeSelect }: { onSizeSelect?: (size: str
     setResult(null);
 
     setTimeout(() => {
-      // Basic size logic
+      // BMI-based size logic using both height and weight
+      const heightM = height / 100;
+      const bmi = weight / (heightM * heightM);
+
       let size = 'M';
-      if (weight < 52) {
+      if (bmi < 18.5) {
         size = 'XS';
-      } else if (weight >= 52 && weight < 62) {
+      } else if (bmi >= 18.5 && bmi < 21) {
         size = 'S';
-      } else if (weight >= 62 && weight < 72) {
+      } else if (bmi >= 21 && bmi < 25) {
         size = 'M';
-      } else if (weight >= 72 && weight < 82) {
+      } else if (bmi >= 25 && bmi < 29) {
         size = 'L';
       } else {
         size = 'XL';
@@ -38,7 +41,7 @@ export default function SizeFinder({ onSizeSelect }: { onSizeSelect?: (size: str
       } else if (fitPref === 'loose' && idx < sizes.length - 1) {
         idx += 1;
       }
-      
+
       const recommendedSize = sizes[idx];
       setResult(recommendedSize);
       setCalculating(false);
@@ -80,7 +83,7 @@ export default function SizeFinder({ onSizeSelect }: { onSizeSelect?: (size: str
             {/* Height Slider */}
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-zinc-500">
-                <span className="flex items-center gap-1"><Ruler className="w-4 h-4 text-zinc-450" /> Height</span>
+                <span className="flex items-center gap-1"><Ruler className="w-4 h-4 text-zinc-400" /> Height</span>
                 <span className="text-black">{height} cm</span>
               </div>
               <input 
@@ -96,7 +99,7 @@ export default function SizeFinder({ onSizeSelect }: { onSizeSelect?: (size: str
             {/* Weight Slider */}
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-zinc-500">
-                <span className="flex items-center gap-1"><Scale className="w-4 h-4 text-zinc-450" /> Weight</span>
+                <span className="flex items-center gap-1"><Scale className="w-4 h-4 text-zinc-400" /> Weight</span>
                 <span className="text-black">{weight} kg</span>
               </div>
               <input 
@@ -120,7 +123,7 @@ export default function SizeFinder({ onSizeSelect }: { onSizeSelect?: (size: str
                     className={`py-2 text-[10px] md:text-xs font-bold rounded-lg border uppercase tracking-wider transition-all ${
                       fitPref === pref
                         ? 'bg-black border-black text-white shadow-sm'
-                        : 'bg-zinc-50 border-zinc-200 text-zinc-655 hover:border-zinc-350'
+                        : 'bg-zinc-50 border-zinc-200 text-zinc-655 hover:border-zinc-300'
                     }`}
                   >
                     {pref}
@@ -133,7 +136,7 @@ export default function SizeFinder({ onSizeSelect }: { onSizeSelect?: (size: str
             <button
               onClick={calculateSize}
               disabled={calculating}
-              className="w-full bg-black hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-widest py-4.5 transition-colors shadow-md hover:shadow-lg rounded-xl"
+              className="w-full bg-black hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-widest py-4 transition-colors shadow-md hover:shadow-lg rounded-xl"
             >
               {calculating ? 'Analyzing Body Data...' : 'Calculate Recommended Size'}
             </button>
@@ -151,7 +154,7 @@ export default function SizeFinder({ onSizeSelect }: { onSizeSelect?: (size: str
                   className="flex flex-col items-center text-center space-y-3"
                 >
                   <div className="w-10 h-10 border-2 border-zinc-200 border-t-black rounded-full animate-spin" />
-                  <p className="text-xs uppercase tracking-widest text-zinc-450 font-semibold">Running smart fit analysis...</p>
+                  <p className="text-xs uppercase tracking-widest text-zinc-400 font-semibold">Running smart fit analysis...</p>
                 </motion.div>
               ) : result ? (
                 <motion.div 
@@ -161,7 +164,7 @@ export default function SizeFinder({ onSizeSelect }: { onSizeSelect?: (size: str
                   transition={{ type: 'spring', damping: 15 }}
                   className="flex flex-col items-center text-center space-y-4"
                 >
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-450">Your Recommended Size</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Your Recommended Size</span>
                   <div className="text-6xl md:text-7xl font-bold tracking-tighter text-black bg-zinc-50 w-28 h-28 md:w-32 md:h-32 rounded-full border border-zinc-200 flex items-center justify-center shadow-lg">
                     {result}
                   </div>
