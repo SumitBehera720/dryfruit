@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { hashPassword, signToken } from '@/lib/auth';
+import { query } from '@/lib/db';
+import { COOKIE_NAME } from '@/lib/auth-edge';
+
+interface UserRow { id: number; email: string; name: string; role: string; }
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,9 +17,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
     }
 
+    // Check for existing user
     try {
-      const existing = await prisma.user.findUnique({ where: { email } });
-      if (existing) {
+      const existing = await query<UserRow>('SELECT id FROM User WHERE email = ? LIMIT 1', [email]);
+      if (existing.length > 0) {
         return NextResponse.json({ error: 'Email already registered' }, { status: 409 });
       }
     } catch {
@@ -25,26 +29,23 @@ export async function POST(request: NextRequest) {
 
     const hashed = await hashPassword(password);
 
-    let user;
     try {
-      user = await prisma.user.create({
-        data: { name, email, password: hashed, role: 'customer' },
-      });
+      await query('INSERT INTO User (name, email, password, role, createdAt, updatedAt) VALUES (?, ?, ?, ?, NOW(), NOW())', [name, email, hashed, 'customer']);
+      const newRows = await query<UserRow>('SELECT id, email, name, role FROM User WHERE email = ? LIMIT 1', [email]);
+      const newUser = newRows[0];
+
+      if (!newUser) throw new Error('User creation failed');
+
+      const token = signToken({ userId: newUser.id, email: newUser.email, role: newUser.role });
+      const res = NextResponse.json({ token, user: { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role } });
+      const isSecure = request.nextUrl.protocol === 'https:' || request.headers.get('x-forwarded-proto') === 'https';
+      res.cookies.set(COOKIE_NAME, token, { httpOnly: true, secure: isSecure, sameSite: 'lax', path: '/', maxAge: 604800 });
+      return res;
     } catch {
-      // If DB fails, return success for demo
-      const token = signToken({ userId: 999, email, role: 'customer' });
-      return NextResponse.json({
-        token,
-        user: { id: 999, email, name, role: 'customer' },
-      });
+      // DB insert failed — return ephemeral user for demo
+      const token = signToken({ userId: Date.now(), email, role: 'customer' });
+      return NextResponse.json({ token, user: { id: Date.now(), email, name, role: 'customer' } });
     }
-
-    const token = signToken({ userId: user.id, email: user.email, role: user.role });
-
-    return NextResponse.json({
-      token,
-      user: { id: user.id, email: user.email, name: user.name, role: user.role },
-    });
   } catch {
     return NextResponse.json({ error: 'Registration failed' }, { status: 500 });
   }

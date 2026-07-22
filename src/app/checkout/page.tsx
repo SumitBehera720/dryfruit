@@ -1,18 +1,24 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useCart } from '../../context/CartContext';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCart, CartItem } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { ArrowLeft, Truck, Lock } from 'lucide-react';
+import { ArrowLeft, Truck, Lock, Zap } from 'lucide-react';
 
-export default function CheckoutPage() {
-  const { cart, cartTotal, clearCart } = useCart();
+function CheckoutContent() {
+  const { cart, clearCart } = useCart();
+  const { isAuthenticated, token, user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isBuyNow = searchParams.get('mode') === 'buynow';
+
   const [mounted, setMounted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [buyNowItem, setBuyNowItem] = useState<CartItem | null>(null);
+
   const [form, setForm] = useState({
     customerName: '',
     email: '',
@@ -23,12 +29,64 @@ export default function CheckoutPage() {
     pincode: '',
   });
 
+  // Items to show in order summary
+  const checkoutItems: CartItem[] = isBuyNow && buyNowItem ? [buyNowItem] : cart;
+  const checkoutTotal = checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const prefillFromProfile = useCallback(async () => {
+    if (!token) return;
+    try {
+      const [profileRes, addrRes] = await Promise.all([
+        fetch('/api/auth/profile', { headers: { Authorization: `Bearer ${token}` } }),
+        fetch('/api/auth/addresses', { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+      const profile = profileRes.ok ? await profileRes.json() : null;
+      const addrs = addrRes.ok ? await addrRes.json() : [];
+      const defaultAddr = addrs.find((a: { isDefault: number }) => a.isDefault) || addrs[0];
+
+      setForm(f => ({
+        ...f,
+        customerName: profile?.name || user?.name || f.customerName,
+        email: profile?.email || user?.email || f.email,
+        phone: profile?.phone || f.phone,
+        address: defaultAddr?.line1 || f.address,
+        city: defaultAddr?.city || f.city,
+        state: defaultAddr?.state || f.state,
+        pincode: defaultAddr?.pincode || f.pincode,
+      }));
+    } catch { /* silent */ }
+  }, [token, user]);
+
   useEffect(() => {
     setMounted(true);
-    if (cart.length === 0 && mounted) {
-      router.push('/shop');
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    // Auth guard
+    if (!isAuthenticated) {
+      router.push('/login?redirect=/checkout' + (isBuyNow ? '?mode=buynow' : ''));
+      return;
     }
-  }, [cart, mounted, router]);
+
+    // Load Buy Now item
+    if (isBuyNow) {
+      try {
+        const stored = sessionStorage.getItem('aerth_buynow');
+        if (stored) setBuyNowItem(JSON.parse(stored));
+        else router.push('/shop'); // no buynow item → go to shop
+      } catch { router.push('/shop'); }
+    } else {
+      // Regular cart mode — redirect if empty
+      if (cart.length === 0) {
+        router.push('/shop');
+        return;
+      }
+    }
+
+    prefillFromProfile();
+  }, [mounted, isAuthenticated, isBuyNow, cart.length, router, prefillFromProfile]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -44,8 +102,8 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
-          total: cartTotal,
-          items: cart.map((item) => ({
+          total: checkoutTotal,
+          items: checkoutItems.map((item) => ({
             productName: item.name,
             price: item.price,
             quantity: item.quantity,
@@ -62,7 +120,12 @@ export default function CheckoutPage() {
         return;
       }
 
-      clearCart();
+      if (isBuyNow) {
+        sessionStorage.removeItem('aerth_buynow');
+      } else {
+        clearCart();
+      }
+
       router.push(`/order-confirmation?id=${order.id}`);
     } catch {
       alert('Connection error. Please try again.');
@@ -72,20 +135,27 @@ export default function CheckoutPage() {
   };
 
   if (!mounted) return null;
+  if (!isAuthenticated) return null;
 
   return (
     <div className="flex flex-col min-h-screen bg-white font-sans">
       <Header />
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-          <Link href="/cart" className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-black transition-colors mb-6">
-            <ArrowLeft className="w-4 h-4" /> Back to Cart
-          </Link>
+          <button
+            onClick={() => isBuyNow ? router.back() : router.push('/shop')}
+            className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-black transition-colors mb-6"
+          >
+            <ArrowLeft className="w-4 h-4" /> {isBuyNow ? 'Back to Product' : 'Continue Shopping'}
+          </button>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
             {/* Left: Checkout Form */}
             <div className="lg:col-span-7">
-              <h1 className="text-xl md:text-2xl font-bold uppercase tracking-widest text-black mb-8">Checkout</h1>
+              <div className="flex items-center gap-3 mb-8">
+                {isBuyNow && <span className="flex items-center gap-1.5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full"><Zap className="w-3 h-3 fill-yellow-500 stroke-yellow-500" /> Buy Now</span>}
+                <h1 className="text-xl md:text-2xl font-bold uppercase tracking-widest text-black">Checkout</h1>
+              </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-6 space-y-4">
@@ -147,7 +217,7 @@ export default function CheckoutPage() {
                   {submitting ? (
                     <span className="w-5 h-5 border-2 border-zinc-400 border-t-white rounded-full animate-spin" />
                   ) : (
-                    `Place Order — ₹${cartTotal.toLocaleString('en-IN')}`
+                    `Place Order — ₹${checkoutTotal.toLocaleString('en-IN')}`
                   )}
                 </button>
               </form>
@@ -156,11 +226,15 @@ export default function CheckoutPage() {
             {/* Right: Order Summary */}
             <div className="lg:col-span-5">
               <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-6 sticky top-24">
-                <h2 className="text-xs font-bold uppercase tracking-widest text-black mb-4">Order Summary</h2>
+                <h2 className="text-xs font-bold uppercase tracking-widest text-black mb-4">
+                  Order Summary {isBuyNow && <span className="text-yellow-600 ml-1">(Buy Now)</span>}
+                </h2>
                 <div className="space-y-3">
-                  {cart.map((item) => (
+                  {checkoutItems.map((item) => (
                     <div key={`${item.id}-${item.color}-${item.size}`} className="flex items-center gap-3 pb-3 border-b border-zinc-200 last:border-0">
-                      <div className="w-12 h-14 bg-zinc-200 rounded-lg overflow-hidden flex-shrink-0" />
+                      <div className="w-12 h-14 bg-zinc-200 rounded-lg overflow-hidden flex-shrink-0">
+                        {item.image && <img src={item.image} alt={item.name} className="w-full h-full object-cover" />}
+                      </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[11px] font-semibold text-black truncate">{item.name}</p>
                         <p className="text-[9px] text-zinc-500">{item.color} / {item.size} &times; {item.quantity}</p>
@@ -172,7 +246,7 @@ export default function CheckoutPage() {
                 <div className="mt-4 pt-4 border-t border-zinc-200 space-y-2">
                   <div className="flex justify-between text-xs text-zinc-500">
                     <span>Subtotal</span>
-                    <span>₹{cartTotal.toLocaleString('en-IN')}</span>
+                    <span>₹{checkoutTotal.toLocaleString('en-IN')}</span>
                   </div>
                   <div className="flex justify-between text-xs text-green-600 font-semibold">
                     <span>Shipping</span>
@@ -180,7 +254,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between text-sm font-bold text-black pt-2 border-t border-zinc-200">
                     <span>Total</span>
-                    <span>₹{cartTotal.toLocaleString('en-IN')}</span>
+                    <span>₹{checkoutTotal.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
               </div>
@@ -190,5 +264,13 @@ export default function CheckoutPage() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><span className="w-8 h-8 border-2 border-zinc-300 border-t-black rounded-full animate-spin" /></div>}>
+      <CheckoutContent />
+    </Suspense>
   );
 }

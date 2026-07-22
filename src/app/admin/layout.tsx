@@ -29,6 +29,7 @@ const navItems = [
   { href: '/admin/pages', label: 'Pages', icon: File },
   { href: '/admin/menu', label: 'Menu', icon: MenuIcon },
   { href: '/admin/footer', label: 'Footer', icon: MenuIcon },
+  { href: '/admin/instagram', label: 'Instagram', icon: Grid3X3 },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
 ];
 

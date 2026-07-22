@@ -45,3 +45,10 @@ export function requireAdmin(request: NextRequest): JwtPayload | null {
   if (!payload || payload.role !== 'admin') return null;
   return payload;
 }
+
+// Accepts any authenticated user (customer or admin)
+export function requireAuth(request: NextRequest): JwtPayload | null {
+  const token = getTokenFromRequest(request);
+  if (!token) return null;
+  return verifyToken(token);
+}

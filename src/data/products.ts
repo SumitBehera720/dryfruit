@@ -2,7 +2,7 @@ export interface ProductVariant {
   colorName: string;
   hex: string;
   image: string;
-  gallery: string[];
+  images: string[];
 }
 
 export interface Review {
@@ -58,7 +58,7 @@ export const products: Product[] = [
         colorName: 'Earthstone Plum',
         hex: '#4A3546',
         image: '/images/product_plum_leggings.png',
-        gallery: [
+        images: [
           '/images/product_plum_leggings.png',
           '/images/infographic_leggings.png',
           '/images/hero_bg.png'
@@ -68,7 +68,7 @@ export const products: Product[] = [
         colorName: 'Obsidian Black',
         hex: '#181818',
         image: '/images/product_black_leggings.png',
-        gallery: [
+        images: [
           '/images/product_black_leggings.png',
           '/images/infographic_leggings.png'
         ]
@@ -124,7 +124,7 @@ export const products: Product[] = [
         colorName: 'Obsidian Black',
         hex: '#181818',
         image: '/images/product_black_flare.png',
-        gallery: [
+        images: [
           '/images/product_black_flare.png',
           '/images/product_black_leggings.png'
         ]
@@ -171,7 +171,7 @@ export const products: Product[] = [
         colorName: 'Obsidian Black',
         hex: '#181818',
         image: '/images/product_black_shorts.png',
-        gallery: [
+        images: [
           '/images/product_black_shorts.png',
           '/images/product_black_leggings.png'
         ]
@@ -210,13 +210,13 @@ export const products: Product[] = [
         colorName: 'Heather Grey',
         hex: '#8C92AC',
         image: '/images/product_mens_tee.png',
-        gallery: ['/images/product_mens_tee.png']
+        images: ['/images/product_mens_tee.png']
       },
       {
         colorName: 'Obsidian Black',
         hex: '#181818',
         image: '/images/product_mens_tee.png',
-        gallery: ['/images/product_mens_tee.png']
+        images: ['/images/product_mens_tee.png']
       }
     ],
     reviews: [],

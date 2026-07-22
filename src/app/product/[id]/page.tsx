@@ -3,11 +3,13 @@
 import React, { use, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Heart, ChevronDown, ChevronUp, HelpCircle, Truck, RotateCcw } from 'lucide-react';
+import { Star, Heart, ChevronDown, ChevronUp, HelpCircle, Truck, RotateCcw, Plus, Minus, Zap } from 'lucide-react';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import { useCart } from '../../../context/CartContext';
+import { useAuth } from '../../../context/AuthContext';
 import SizeFinder from '../../../components/SizeFinder';
+import { useRouter } from 'next/navigation';
 
 interface Variant {
   id: number;
@@ -69,12 +71,15 @@ interface LocalQuestion {
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { addToCart } = useCart();
+  const { isAuthenticated, setShowAuthModal } = useAuth();
+  const router = useRouter();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeVariantIdx, setActiveVariantIdx] = useState(0);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [selectedSize, setSelectedSize] = useState('S');
+  const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({ details: true, shipping: false });
   const [localReviews, setLocalReviews] = useState<Review[]>([]);
@@ -139,6 +144,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   };
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) { setShowAuthModal(true); return; }
     if (!activeVariant) return;
     addToCart({
       id: `${product.slug}-${activeVariant.colorName.toLowerCase().replace(/\s+/g, '-')}-${selectedSize.toLowerCase()}`,
@@ -147,7 +153,39 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       image: activeVariant.image,
       color: activeVariant.colorName,
       size: selectedSize,
+      quantity,
     });
+  };
+
+  const handleBuyNow = () => {
+    if (!isAuthenticated) { setShowAuthModal(true); return; }
+    if (!activeVariant) return;
+    const buyNowItem = {
+      id: `${product.slug}-${activeVariant.colorName.toLowerCase().replace(/\s+/g, '-')}-${selectedSize.toLowerCase()}`,
+      name: product.name,
+      price: product.price,
+      image: activeVariant.image,
+      color: activeVariant.colorName,
+      size: selectedSize,
+      quantity,
+    };
+    sessionStorage.setItem('aerth_buynow', JSON.stringify(buyNowItem));
+    router.push('/checkout?mode=buynow');
+  };
+
+  const handleWishlist = () => {
+    if (!isAuthenticated) { setShowAuthModal(true); return; }
+    const newState = !isWishlisted;
+    setIsWishlisted(newState);
+    try {
+      const stored = JSON.parse(localStorage.getItem('aerth_wishlist') || '[]');
+      if (newState) {
+        const item = { id: product.slug, name: product.name, price: product.price, image: activeVariant?.image || '', slug: product.slug };
+        localStorage.setItem('aerth_wishlist', JSON.stringify([...stored.filter((w: {id: string}) => w.id !== product.slug), item]));
+      } else {
+        localStorage.setItem('aerth_wishlist', JSON.stringify(stored.filter((w: {id: string}) => w.id !== product.slug)));
+      }
+    } catch { /* silent */ }
   };
 
   const toggleAccordion = (section: string) => {
@@ -257,9 +295,32 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </div>
 
+            {/* Quantity Selector */}
+            <div className="space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400">Quantity</span>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                  className="w-9 h-9 rounded-lg border border-zinc-200 flex items-center justify-center hover:border-black transition-colors"
+                >
+                  <Minus className="w-3.5 h-3.5" />
+                </button>
+                <span className="text-sm font-bold w-6 text-center">{quantity}</span>
+                <button
+                  onClick={() => setQuantity(q => Math.min(10, q + 1))}
+                  className="w-9 h-9 rounded-lg border border-zinc-200 flex items-center justify-center hover:border-black transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+
             <div className="flex gap-3 pt-2">
               <button onClick={handleAddToCart} className="flex-1 bg-black hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-widest py-4 transition-all shadow-md hover:shadow-lg rounded-xl">Add To Bag</button>
-              <button onClick={() => setIsWishlisted(!isWishlisted)} className="bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-200 p-4 rounded-xl shadow-sm transition-all" aria-label="Add to wishlist">
+              <button onClick={handleBuyNow} className="flex-1 bg-zinc-950 hover:bg-zinc-700 text-white font-bold text-xs uppercase tracking-widest py-4 transition-all shadow-md hover:shadow-lg rounded-xl flex items-center justify-center gap-2 border border-zinc-700">
+                <Zap className="w-3.5 h-3.5 fill-yellow-400 stroke-yellow-400" /> Buy Now
+              </button>
+              <button onClick={handleWishlist} className="bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-200 p-4 rounded-xl shadow-sm transition-all" aria-label="Add to wishlist">
                 <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 stroke-red-500' : 'stroke-zinc-600'}`} />
               </button>
             </div>

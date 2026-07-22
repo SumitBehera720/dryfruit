@@ -4,8 +4,8 @@ export const fallbackProducts = [
     category: 'leggings', gender: 'women', active: true,
     description: 'Engineered with a high-performance compression waistband, our signature Contour Leggings naturally shape and lift your silhouette. Squat-proof, breathable, and finished with a seamless fit that acts like a second skin.',
     variants: [
-      { id: 1, colorName: 'Earthstone Plum', hex: '#4A3546', image: '/images/product_plum_leggings.png', gallery: '["/images/product_plum_leggings.png","/images/infographic_leggings.png","/images/hero_bg.png"]', stock: 10 },
-      { id: 2, colorName: 'Obsidian Black', hex: '#181818', image: '/images/product_black_leggings.png', gallery: '["/images/product_black_leggings.png","/images/infographic_leggings.png"]', stock: 10 },
+      { id: 1, colorName: 'Earthstone Plum', hex: '#4A3546', image: '/images/product_plum_leggings.png', images: '["/images/product_plum_leggings.png","/images/infographic_leggings.png","/images/hero_bg.png"]', stock: 10 },
+      { id: 2, colorName: 'Obsidian Black', hex: '#181818', image: '/images/product_black_leggings.png', images: '["/images/product_black_leggings.png","/images/infographic_leggings.png"]', stock: 10 },
     ],
     details: [
       { id: 1, text: '1.5cm higher waistband for added coverage', sortOrder: 1 },
@@ -26,7 +26,7 @@ export const fallbackProducts = [
     category: 'leggings', gender: 'women', active: true,
     description: 'Transition seamlessly from the studio to the street. The Aurora Flare Leggings combine high-waisted support with a chic flared hemline.',
     variants: [
-      { id: 3, colorName: 'Obsidian Black', hex: '#181818', image: '/images/product_black_flare.png', gallery: '["/images/product_black_flare.png","/images/product_black_leggings.png"]', stock: 10 },
+      { id: 3, colorName: 'Obsidian Black', hex: '#181818', image: '/images/product_black_flare.png', images: '["/images/product_black_flare.png","/images/product_black_leggings.png"]', stock: 10 },
     ],
     details: [
       { id: 6, text: 'Flattering bootcut flare silhouette', sortOrder: 1 },
@@ -45,7 +45,7 @@ export const fallbackProducts = [
     category: 'shorts', gender: 'women', active: true,
     description: 'Our signature sculpting technology in a mid-thigh active short.',
     variants: [
-      { id: 4, colorName: 'Obsidian Black', hex: '#181818', image: '/images/product_black_shorts.png', gallery: '["/images/product_black_shorts.png","/images/product_black_leggings.png"]', stock: 10 },
+      { id: 4, colorName: 'Obsidian Black', hex: '#181818', image: '/images/product_black_shorts.png', images: '["/images/product_black_shorts.png","/images/product_black_leggings.png"]', stock: 10 },
     ],
     details: [
       { id: 11, text: '5-inch inseam prevents riding up', sortOrder: 1 },
@@ -59,8 +59,8 @@ export const fallbackProducts = [
     category: 'tops', gender: 'men', active: true,
     description: 'Engineered with high-ventilation AeroWeave mesh.',
     variants: [
-      { id: 5, colorName: 'Heather Grey', hex: '#8C92AC', image: '/images/product_mens_tee.png', gallery: '["/images/product_mens_tee.png"]', stock: 10 },
-      { id: 6, colorName: 'Obsidian Black', hex: '#181818', image: '/images/product_mens_tee.png', gallery: '["/images/product_mens_tee.png"]', stock: 10 },
+      { id: 5, colorName: 'Heather Grey', hex: '#8C92AC', image: '/images/product_mens_tee.png', images: '["/images/product_mens_tee.png"]', stock: 10 },
+      { id: 6, colorName: 'Obsidian Black', hex: '#181818', image: '/images/product_mens_tee.png', images: '["/images/product_mens_tee.png"]', stock: 10 },
     ],
     details: [
       { id: 16, text: 'Ultra-lightweight AeroWeave mesh fabric', sortOrder: 1 },

@@ -14,7 +14,7 @@ export interface CartItem {
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (item: Omit<CartItem, 'quantity'>) => void;
+  addToCart: (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, qty: number) => void;
   cartTotal: number;
@@ -49,7 +49,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [cart, isMounted]);
 
-  const addToCart = (newItem: Omit<CartItem, 'quantity'>) => {
+  const addToCart = (newItem: Omit<CartItem, 'quantity'> & { quantity?: number }) => {
+    const requestedQty = newItem.quantity ?? 1;
     setCart((prevCart) => {
       const existingIndex = prevCart.findIndex(
         (item) => item.id === newItem.id && item.color === newItem.color && item.size === newItem.size
@@ -57,13 +58,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       if (existingIndex > -1) {
         const updatedCart = [...prevCart];
-        updatedCart[existingIndex].quantity += 1;
+        updatedCart[existingIndex].quantity += requestedQty;
         return updatedCart;
       }
 
-      return [...prevCart, { ...newItem, quantity: 1 }];
+      return [...prevCart, { ...newItem, quantity: requestedQty }];
     });
-    setIsOpen(true); // Open the slide drawer when item is added!
+    setIsOpen(true);
   };
 
   const removeFromCart = (id: string) => {

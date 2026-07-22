@@ -31,14 +31,17 @@ export default function AdminSettingsPage() {
 
   const handleSave = async () => {
     setSaving(true);
-    await fetch('/api/settings', {
+    const res = await fetch('/api/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify(settings),
     });
     setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    if (res.ok) {
+      fetchSettings(); // refetch to confirm
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    }
   };
 
   return (
@@ -116,6 +119,17 @@ export default function AdminSettingsPage() {
             value={settings.return_policy || ''}
             onChange={(e) => handleChange('return_policy', e.target.value)}
             className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">WhatsApp Chat Number (with country code, e.g. 919876543210)</label>
+          <input
+            type="text"
+            value={settings.whatsapp_number || ''}
+            onChange={(e) => handleChange('whatsapp_number', e.target.value)}
+            placeholder="e.g. 919876543210"
+            className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black font-sans"
           />
         </div>
       </div>

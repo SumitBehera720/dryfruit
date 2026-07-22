@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/auth';
-import { fallbackSettings } from '@/lib/fallback-data';
+import { getSettings, saveSettings } from '@/lib/settings-store';
 
 export async function GET() {
   try {
-    const settings = await prisma.siteSetting.findMany();
-    const result: Record<string, string> = {};
-    for (const s of settings) {
-      result[s.key] = s.value;
-    }
+    const result = await getSettings();
     return NextResponse.json(result);
   } catch {
-    return NextResponse.json(fallbackSettings);
+    return NextResponse.json({ error: 'Failed to load settings' }, { status: 500 });
   }
 }
 
@@ -22,13 +17,10 @@ export async function PUT(request: NextRequest) {
 
   try {
     const data = await request.json();
-    for (const [key, value] of Object.entries(data)) {
-      await prisma.siteSetting.upsert({
-        where: { key },
-        update: { value: String(value) },
-        create: { key, value: String(value) },
-      });
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
     }
+    await saveSettings(data);
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 });

@@ -46,23 +46,28 @@ export default function AdminFooterPage() {
   const [saved, setSaved] = useState(false);
   const token = typeof window !== 'undefined' ? localStorage.getItem('aerth_admin_token') : null;
 
-  useEffect(() => {
+  const fetchData = () => {
     fetch('/api/footer')
       .then(async (res) => res.ok ? res.json() : null)
       .then((d) => { if (d) setData(d); })
       .catch(() => {});
-  }, []);
+  };
+
+  useEffect(() => { fetchData(); }, []);
 
   const handleSave = async () => {
     setSaving(true);
-    await fetch('/api/footer', {
+    const res = await fetch('/api/footer', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify(data),
     });
     setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    if (res.ok) {
+      fetchData();
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    }
   };
 
   const updateSocial = (i: number, field: keyof SocialLink, value: string) => {

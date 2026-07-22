@@ -76,18 +76,18 @@ const defaultFooter: FooterData = {
       title: 'Company',
       links: [
         { label: 'About Us', url: '/about' },
-        { label: 'Contact Us', url: '/about' },
+        { label: 'Contact Us', url: '/contact' },
       ],
     },
     {
       title: 'Help',
       links: [
-        { label: 'FAQs', url: '/about' },
-        { label: 'Shipping', url: '/about' },
-        { label: 'Returns', url: '/about' },
-        { label: 'Size Guide', url: '/about' },
-        { label: 'Terms & Conditions', url: '/about' },
-        { label: 'Privacy Policy', url: '/about' },
+        { label: 'FAQs', url: '/faqs' },
+        { label: 'Shipping', url: '/shipping' },
+        { label: 'Returns', url: '/returns' },
+        { label: 'Size Guide', url: '/size-guide' },
+        { label: 'Terms & Conditions', url: '/terms' },
+        { label: 'Privacy Policy', url: '/privacy' },
       ],
     },
   ],
@@ -261,8 +261,20 @@ export default function Footer() {
       </div>
 
       {/* Copyright Bar */}
-      <div className="w-full bg-[#080808] border-t border-zinc-900/60 py-6 text-center text-[10px] text-zinc-500 tracking-wider">
-        {data.copyright}
+      <div className="w-full bg-[#080808] border-t border-zinc-900/60 py-6 text-center text-[10px] text-zinc-500 tracking-wider flex flex-col sm:flex-row justify-center items-center gap-2">
+        <span>{data.copyright}</span>
+        <span className="hidden sm:inline text-zinc-700">|</span>
+        <span>
+          Developed by{' '}
+          <a
+            href="https://qubnixtechnology.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-zinc-400 hover:text-white transition-colors underline underline-offset-4"
+          >
+            Qubnix Technology
+          </a>
+        </span>
       </div>
 
     </footer>

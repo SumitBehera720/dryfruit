@@ -44,20 +44,24 @@ export default function ShopPage() {
   const [sortBy, setSortBy] = useState('featured');
   const [activeVariants, setActiveVariants] = useState<Record<number, number>>({});
   const [mounted, setMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     setMounted(true);
     const params = new URLSearchParams(window.location.search);
     const gender = params.get('gender');
     const category = params.get('category');
+    const q = params.get('search') || params.get('q');
     if (gender) setSelectedGender(gender);
     if (category) setSelectedCategory(category);
+    if (q) setSearchQuery(q);
   }, []);
 
   useEffect(() => {
     const params = new URLSearchParams();
     if (selectedGender !== 'all') params.set('gender', selectedGender);
     if (selectedCategory !== 'all') params.set('category', selectedCategory);
+    if (searchQuery.trim() !== '') params.set('search', searchQuery);
 
     setLoading(true);
     fetch(`/api/products?${params.toString()}`)
@@ -70,7 +74,7 @@ export default function ShopPage() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [selectedGender, selectedCategory]);
+  }, [selectedGender, selectedCategory, searchQuery]);
 
   const handleGenderChange = (gender: string) => {
     setSelectedGender(gender);
@@ -123,9 +127,26 @@ export default function ShopPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/40 to-black/70" />
           </div>
           <div className="max-w-7xl mx-auto px-4 relative z-10 space-y-3">
-            <span className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-zinc-400 font-bold block">{bannerData[selectedGender]?.subtitle || bannerData.all.subtitle}</span>
-            <h1 className="text-3xl md:text-5xl font-extrabold uppercase tracking-widest leading-none">{bannerData[selectedGender]?.title || bannerData.all.title}</h1>
-            <p className="text-zinc-300 text-xs md:text-sm max-w-lg mx-auto tracking-widest font-light leading-relaxed uppercase">{bannerData[selectedGender]?.desc || bannerData.all.desc}</p>
+            <span className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-zinc-400 font-bold block">
+              {searchQuery ? 'Search' : (bannerData[selectedGender]?.subtitle || bannerData.all.subtitle)}
+            </span>
+            <h1 className="text-3xl md:text-5xl font-extrabold uppercase tracking-widest leading-none">
+              {searchQuery ? 'Search Results' : (bannerData[selectedGender]?.title || bannerData.all.title)}
+            </h1>
+            <p className="text-zinc-300 text-xs md:text-sm max-w-lg mx-auto tracking-widest font-light leading-relaxed uppercase">
+              {searchQuery ? `Showing results for "${searchQuery}"` : (bannerData[selectedGender]?.desc || bannerData.all.desc)}
+            </p>
+            {searchQuery && (
+              <button 
+                onClick={() => {
+                  setSearchQuery('');
+                  window.history.replaceState({}, '', '/shop');
+                }}
+                className="inline-block mt-2 px-4 py-1.5 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-full text-[10px] uppercase tracking-widest font-semibold text-white transition-all cursor-pointer"
+              >
+                Clear Search
+              </button>
+            )}
           </div>
         </section>
 

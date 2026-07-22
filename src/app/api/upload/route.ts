@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
 
 export async function POST(request: NextRequest) {
   const payload = requireAdmin(request);
@@ -16,17 +14,11 @@ export async function POST(request: NextRequest) {
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    const base64 = buffer.toString('base64');
+    const mime = file.type || 'image/png';
+    const dataUrl = `data:${mime};base64,${base64}`;
 
-    const ext = path.extname(file.name) || '.png';
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
-    const dir = path.join(process.cwd(), 'public', 'uploads');
-    const filepath = path.join(dir, filename);
-
-    await mkdir(dir, { recursive: true });
-    await writeFile(filepath, buffer);
-
-    const url = `/uploads/${filename}`;
-    return NextResponse.json({ url });
+    return NextResponse.json({ url: dataUrl });
   } catch (e) {
     console.error('Upload error:', e);
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });

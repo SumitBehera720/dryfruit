@@ -11,6 +11,7 @@ import ClientSpotlight from '../components/ClientSpotlight';
 import BrandStory from '../components/BrandStory';
 import Categories from '../components/Categories';
 import ClientReviewsMarquee from '../components/ClientReviewsMarquee';
+import InstagramGallery from '../components/InstagramGallery';
 import JournalSection from '../components/JournalSection';
 import Footer from '../components/Footer';
 
@@ -28,6 +29,7 @@ export default function Home() {
         <BrandStory />
         <Categories />
         <ClientReviewsMarquee />
+        <InstagramGallery />
         <JournalSection />
       </main>
       <Footer />

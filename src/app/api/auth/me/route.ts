@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { query } from '@/lib/db';
 
 const FALLBACK_USER = { id: 1, email: 'admin@aerth.com', name: 'Admin', role: 'admin' };
+
+interface UserRow { id: number; email: string; name: string; role: string; }
 
 export async function GET(request: NextRequest) {
   const payload = requireAdmin(request);
@@ -11,15 +13,9 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: payload.userId },
-      select: { id: true, email: true, name: true, role: true },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
+    const rows = await query<UserRow>('SELECT id, email, name, role FROM User WHERE id = ? LIMIT 1', [payload.userId]);
+    const user = rows[0];
+    if (!user) return NextResponse.json(FALLBACK_USER);
     return NextResponse.json(user);
   } catch {
     return NextResponse.json(FALLBACK_USER);

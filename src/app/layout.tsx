@@ -5,6 +5,7 @@ import { AuthProvider } from "../context/AuthContext";
 import { SmoothScrollProvider } from "../components/SmoothScrollProvider";
 import PageLoader from "../components/PageLoader";
 import AuthModal from "../components/AuthModal";
+import WhatsAppButton from "../components/WhatsAppButton";
 
 export const metadata: Metadata = {
   title: "AERTH | Premium Sportswear & Activewear",
@@ -24,6 +25,7 @@ export default function RootLayout({
             <SmoothScrollProvider>
               <PageLoader />
               <AuthModal />
+              <WhatsAppButton />
               {children}
             </SmoothScrollProvider>
           </CartProvider>

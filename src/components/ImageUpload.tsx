@@ -6,7 +6,7 @@ import { Upload, X } from 'lucide-react';
 interface ImageUploadProps {
   value: string;
   onChange: (url: string) => void;
-  label?: string;
+  label?: string | React.ReactNode;
 }
 
 export default function ImageUpload({ value, onChange, label }: ImageUploadProps) {
@@ -42,7 +42,7 @@ export default function ImageUpload({ value, onChange, label }: ImageUploadProps
 
   return (
     <div className="space-y-1.5">
-      {label && <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{label}</label>}
+      {label && typeof label === 'string' ? <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{label}</label> : label}
       <div className="flex items-center gap-3">
         {value ? (
           <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-zinc-200 flex-shrink-0">

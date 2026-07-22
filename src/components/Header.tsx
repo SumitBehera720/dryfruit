@@ -21,6 +21,17 @@ interface MenuItem {
   children?: MenuItem[];
 }
 
+interface SearchProduct {
+  id: number;
+  slug: string;
+  name: string;
+  price: number;
+  category: string;
+  variants?: {
+    image: string;
+  }[];
+}
+
 export default function Header() {
   const router = useRouter();
   const { cart, cartCount, cartTotal, isOpen, setIsOpen, updateQuantity, removeFromCart } = useCart();
@@ -31,6 +42,30 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [mounted, setMounted] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [liveResults, setLiveResults] = useState<SearchProduct[]>([]);
+  const [isLiveLoading, setIsLiveLoading] = useState(false);
+
+  useEffect(() => {
+    if (searchQuery.trim().length < 2) {
+      setLiveResults([]);
+      return;
+    }
+
+    setIsLiveLoading(true);
+    const delayDebounce = setTimeout(() => {
+      fetch(`/api/products?search=${encodeURIComponent(searchQuery.trim())}&limit=6`)
+        .then((res) => res.json())
+        .then((data) => {
+          setLiveResults(data);
+          setIsLiveLoading(false);
+        })
+        .catch(() => {
+          setIsLiveLoading(false);
+        });
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
 
   useEffect(() => {
     setMounted(true);
@@ -50,8 +85,21 @@ export default function Header() {
   const remainingForFreeShipping = freeShippingThreshold - cartTotal;
 
   const handleCheckout = () => {
+    if (!isAuthenticated) {
+      setIsOpen(false);
+      setShowAuthModal(true);
+      return;
+    }
     setIsOpen(false);
     router.push('/checkout');
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setIsSearchOpen(false);
+      router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
   };
 
   return (
@@ -134,7 +182,7 @@ export default function Header() {
           </div>
 
           {/* Right Navigation */}
-          <div className="flex items-center gap-4 md:gap-6">
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
             <div className="hidden md:flex items-center gap-6 font-medium text-sm tracking-widest text-zinc-900 mr-4">
               {menuItems.filter((m) => m.location === 'secondary').map((item) => {
                 const href = item.url || (item.pageSlug ? `/${item.pageSlug}` : '/');
@@ -148,16 +196,16 @@ export default function Header() {
             
             <button 
               onClick={() => setIsSearchOpen(true)}
-              className="p-2 text-zinc-800 hover:text-zinc-600 transition-colors"
+              className="p-1.5 sm:p-2 text-zinc-800 hover:text-zinc-600 transition-colors"
               aria-label="Search"
             >
               <Search className="w-5 h-5 md:w-6 h-6 stroke-[1.5]" />
             </button>
             
-            <div className="relative hidden sm:block">
+            <div className="relative">
               <button
                 onClick={() => isAuthenticated ? setIsUserMenuOpen(!isUserMenuOpen) : setShowAuthModal(true)}
-                className="p-2 text-zinc-800 hover:text-zinc-600 transition-colors"
+                className="p-1.5 sm:p-2 text-zinc-800 hover:text-zinc-600 transition-colors"
                 aria-label="Account"
               >
                 <User className="w-5 h-5 md:w-6 h-6 stroke-[1.5]" />
@@ -170,6 +218,13 @@ export default function Header() {
                       <p className="text-xs font-bold text-black">{user?.name}</p>
                       <p className="text-[10px] text-zinc-500">{user?.email}</p>
                     </div>
+                    <Link
+                      href="/profile"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-xs hover:bg-zinc-50 text-zinc-700 hover:text-black transition-colors"
+                    >
+                      <User className="w-4 h-4" /> My Profile
+                    </Link>
                     {isAdmin && (
                       <Link
                         href="/admin"
@@ -180,7 +235,7 @@ export default function Header() {
                       </Link>
                     )}
                     <button
-                      onClick={() => { logout(); setIsUserMenuOpen(false); }}
+                      onClick={() => { logout(); setIsUserMenuOpen(false); router.push('/login'); }}
                       className="flex items-center gap-3 px-4 py-2.5 text-xs hover:bg-zinc-50 text-zinc-700 hover:text-red-600 transition-colors w-full"
                     >
                       <LogOut className="w-4 h-4" /> Sign Out
@@ -191,8 +246,8 @@ export default function Header() {
             </div>
 
             <button 
-              onClick={() => setIsOpen(true)}
-              className="p-2 text-zinc-800 hover:text-zinc-600 transition-colors relative"
+              onClick={() => { if (!isAuthenticated) { setShowAuthModal(true); return; } setIsOpen(true); }}
+              className="p-1.5 sm:p-2 text-zinc-800 hover:text-zinc-600 transition-colors relative"
               aria-label="Cart"
             >
               <ShoppingBag className="w-5 h-5 md:w-6 h-6 stroke-[1.5]" />
@@ -228,7 +283,7 @@ export default function Header() {
                 <X className="w-5 h-5" />
               </button>
               <h3 className="text-xs uppercase tracking-widest text-zinc-400 mb-3 font-semibold">Search AERTH</h3>
-              <div className="flex gap-2">
+              <form onSubmit={handleSearchSubmit} className="flex gap-2">
                 <input 
                   type="text" 
                   value={searchQuery}
@@ -237,10 +292,65 @@ export default function Header() {
                   className="flex-1 bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 font-sans"
                   autoFocus
                 />
-                <button className="bg-black text-white px-6 rounded-xl hover:bg-zinc-800 text-xs uppercase tracking-wider font-semibold transition-colors">
+                <button type="submit" className="bg-black text-white px-6 rounded-xl hover:bg-zinc-800 text-xs uppercase tracking-wider font-semibold transition-colors">
                   Search
                 </button>
-              </div>
+              </form>
+
+              {/* Live Search Results */}
+              {searchQuery.trim().length >= 2 && (
+                <div className="mt-6 border-t border-zinc-100 pt-6 max-h-[300px] overflow-y-auto">
+                  {isLiveLoading ? (
+                    <div className="text-center py-4 text-xs text-zinc-400 uppercase tracking-widest font-semibold animate-pulse">
+                      Searching...
+                    </div>
+                  ) : liveResults.length === 0 ? (
+                    <div className="text-center py-4 text-xs text-zinc-400 uppercase tracking-widest font-semibold">
+                      No products found
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {liveResults.map((product) => {
+                        const variant = product.variants?.[0];
+                        return (
+                          <Link
+                            key={product.id}
+                            href={`/product/${product.slug}`}
+                            onClick={() => {
+                              setIsSearchOpen(false);
+                              setSearchQuery('');
+                            }}
+                            className="flex items-center gap-3 p-2 rounded-xl hover:bg-zinc-50 transition-all duration-200 group border border-zinc-100/40"
+                          >
+                            <div className="w-12 h-16 bg-zinc-100 rounded-lg overflow-hidden relative flex-shrink-0">
+                              {variant?.image && (
+                                <Image
+                                  src={variant.image}
+                                  alt={product.name}
+                                  fill
+                                  sizes="48px"
+                                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-xs font-bold uppercase tracking-wider text-black truncate group-hover:text-zinc-600 transition-colors">
+                                {product.name}
+                              </h4>
+                              <p className="text-[9px] text-zinc-400 uppercase tracking-widest mt-0.5 font-light">
+                                {product.category}
+                              </p>
+                              <p className="text-xs font-bold text-black mt-1">
+                                ₹{product.price.toLocaleString('en-IN')}
+                              </p>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}
@@ -294,12 +404,15 @@ export default function Header() {
                 {isAuthenticated ? (
                   <div className="space-y-2">
                     <p className="text-sm font-semibold text-black">{user?.name}</p>
+                    <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-2 text-xs hover:text-zinc-600 text-zinc-700">
+                      <User className="w-4 h-4" /> My Profile
+                    </Link>
                     {isAdmin && (
                       <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-2 text-xs hover:text-zinc-600 text-zinc-700">
                         <LayoutDashboard className="w-4 h-4" /> Admin Panel
                       </Link>
                     )}
-                    <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="flex items-center gap-3 py-2 text-xs hover:text-red-600 text-zinc-700">
+                    <button onClick={() => { logout(); setIsMobileMenuOpen(false); router.push('/login'); }} className="flex items-center gap-3 py-2 text-xs hover:text-red-600 text-zinc-700">
                       <LogOut className="w-4 h-4" /> Sign Out
                     </button>
                   </div>
