@@ -196,6 +196,13 @@ mv {TMP} {F}
 mkdir -p {FRONTEND}/.next
 ln -sfn {F}/.next/static {FRONTEND}/.next/static
 
+DOMAIN_DIR="/home/{SSH_USER}/domains/darkgreen-raccoon-384863.hostingersite.com/public_html"
+if [ -d "$DOMAIN_DIR" ]; then
+  ln -sfn {F}/.next "$DOMAIN_DIR/_next" 2>/dev/null || true
+  ln -sfn {FRONTEND}/public/images "$DOMAIN_DIR/images" 2>/dev/null || true
+  ln -sfn {FRONTEND}/public/uploads "$DOMAIN_DIR/uploads" 2>/dev/null || true
+fi
+
 # 5. Ecosystem config
 cat << 'EOF' > {FRONTEND}/ecosystem.config.js
 {ecosystem_content}
