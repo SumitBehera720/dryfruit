@@ -1,5 +1,13 @@
 import paramiko, os, tarfile, time, sys
 
+if os.path.exists('.env'):
+    with open('.env') as ef:
+        for line in ef:
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                k, v = line.split('=', 1)
+                os.environ.setdefault(k.strip(), v.strip().strip('"\''))
+
 SSH_HOST = os.getenv('SSH_HOST', '145.79.58.122')
 SSH_PORT = int(os.getenv('SSH_PORT', '65002'))
 SSH_USER = os.getenv('SSH_USER', 'u892283443')
