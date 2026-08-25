@@ -25,18 +25,18 @@ let nextPageId = 1;
 let nextMenuId = 100;
 const pages: PageData[] = [];
 const menuItems: MenuItemData[] = [
-  { id: 1, label: 'Women', url: '/shop?gender=women', pageSlug: null, parentId: null, sortOrder: 0, location: 'main', megaMenu: false },
-  { id: 2, label: 'All Women', url: '/shop?gender=women', pageSlug: null, parentId: 1, sortOrder: 0, location: 'main', megaMenu: false },
-  { id: 3, label: 'Sculpting Line', url: '/shop?gender=women&category=leggings', pageSlug: null, parentId: 1, sortOrder: 1, location: 'main', megaMenu: false },
-  { id: 4, label: 'Summer Drop', url: '/shop?gender=women&category=shorts', pageSlug: null, parentId: 1, sortOrder: 2, location: 'main', megaMenu: false },
-  { id: 5, label: 'Sports Bras', url: '/shop?gender=women&category=bras', pageSlug: null, parentId: 1, sortOrder: 3, location: 'main', megaMenu: false },
-  { id: 6, label: 'Men', url: '/shop?gender=men', pageSlug: null, parentId: null, sortOrder: 1, location: 'main', megaMenu: false },
-  { id: 7, label: 'All Men', url: '/shop?gender=men', pageSlug: null, parentId: 6, sortOrder: 0, location: 'main', megaMenu: false },
-  { id: 8, label: 'Training Tees', url: '/shop?gender=men&category=tops', pageSlug: null, parentId: 6, sortOrder: 1, location: 'main', megaMenu: false },
-  { id: 9, label: 'Apex Shorts', url: '/shop?gender=men&category=shorts', pageSlug: null, parentId: 6, sortOrder: 2, location: 'main', megaMenu: false },
-  { id: 10, label: 'Track Jackets', url: '/shop?gender=men&category=jackets', pageSlug: null, parentId: 6, sortOrder: 3, location: 'main', megaMenu: false },
-  { id: 11, label: 'About', url: '/about', pageSlug: null, parentId: null, sortOrder: 2, location: 'main', megaMenu: false },
-  { id: 12, label: 'Journal', url: '/#journal', pageSlug: null, parentId: null, sortOrder: 3, location: 'main', megaMenu: false },
+  { id: 1, label: 'Superfoods', url: '/shop', pageSlug: null, parentId: null, sortOrder: 0, location: 'main', megaMenu: true },
+  { id: 2, label: 'Raw Nuts & Kernels', url: '/shop?category=nuts', pageSlug: null, parentId: 1, sortOrder: 0, location: 'main', megaMenu: false },
+  { id: 3, label: 'Dried Fruits & Dates', url: '/shop?category=dried-fruits', pageSlug: null, parentId: 1, sortOrder: 1, location: 'main', megaMenu: false },
+  { id: 4, label: 'Adaptogens & Powders', url: '/shop?category=adaptogens', pageSlug: null, parentId: 1, sortOrder: 2, location: 'main', megaMenu: false },
+  { id: 5, label: 'Functional Elixirs', url: '/shop?category=elixirs', pageSlug: null, parentId: 1, sortOrder: 3, location: 'main', megaMenu: false },
+  { id: 6, label: 'Seeds & Mixes', url: '/shop?category=seeds', pageSlug: null, parentId: 1, sortOrder: 4, location: 'main', megaMenu: false },
+  { id: 7, label: 'Trail Mixes & Snacks', url: '/shop?category=trail-mixes', pageSlug: null, parentId: 1, sortOrder: 5, location: 'main', megaMenu: false },
+  { id: 8, label: 'Nuts & Kernels', url: '/shop?category=nuts', pageSlug: null, parentId: null, sortOrder: 1, location: 'main', megaMenu: false },
+  { id: 9, label: 'Dried Fruits', url: '/shop?category=dried-fruits', pageSlug: null, parentId: null, sortOrder: 2, location: 'main', megaMenu: false },
+  { id: 10, label: 'Adaptogens', url: '/shop?category=adaptogens', pageSlug: null, parentId: null, sortOrder: 3, location: 'main', megaMenu: false },
+  { id: 11, label: 'Elixirs', url: '/shop?category=elixirs', pageSlug: null, parentId: null, sortOrder: 4, location: 'main', megaMenu: false },
+  { id: 12, label: 'Gifting', url: '/shop?category=gifting', pageSlug: null, parentId: null, sortOrder: 5, location: 'main', megaMenu: false },
 ];
 
 export function getPages(): PageData[] {

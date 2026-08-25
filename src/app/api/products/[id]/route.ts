@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query } from '@/lib/db';
+import { query, withTransaction } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
-import { getCachedProduct, getCachedProducts, updateCachedProduct } from '@/lib/products-store';
+import { getCachedProduct, getCachedProducts } from '@/lib/products-store';
 
 interface ProductRow { id: number; slug: string; name: string; price: number; salePrice: number | null; label: string | null; category: string; gender: string; active: number; description: string; createdAt: string; }
 interface VariantRow { id: number; productId: number; colorName: string; hex: string; image: string; images: string; stock: number; }
@@ -55,40 +55,62 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
   const data = await request.json();
 
+  // Input validation
+  if (!data.name || typeof data.name !== 'string' || data.name.trim() === '') {
+    return NextResponse.json({ error: 'Product name is required' }, { status: 400 });
+  }
+
   try {
-    await query(
-      'UPDATE Product SET name=?, slug=?, price=?, salePrice=?, label=?, category=?, gender=?, description=?, active=? WHERE id=?',
-      [data.name, data.slug, parseFloat(data.price), data.salePrice ? parseFloat(data.salePrice) : null, data.label || null, data.category, data.gender, data.description, data.active !== undefined ? (data.active ? 1 : 0) : 1, productId]
-    );
+    const result = await withTransaction(async (conn) => {
+      await conn.execute(
+        'UPDATE Product SET name=?, slug=?, price=?, salePrice=?, label=?, category=?, gender=?, description=?, active=?, updatedAt=NOW() WHERE id=?',
+        [
+          data.name.trim(),
+          data.slug ? data.slug.trim() : data.name.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-'),
+          parseFloat(data.price),
+          data.salePrice ? parseFloat(data.salePrice) : null,
+          data.label || null,
+          data.category,
+          data.gender || 'unisex',
+          data.description || '',
+          data.active !== undefined ? (data.active ? 1 : 0) : 1,
+          productId
+        ]
+      );
 
-    if (data.variants && Array.isArray(data.variants)) {
-      await query('DELETE FROM ProductVariant WHERE productId = ?', [productId]);
-      for (const v of data.variants) {
-        await query(
-          'INSERT INTO ProductVariant (productId, colorName, hex, image, images, stock) VALUES (?, ?, ?, ?, ?, ?)',
-          [productId, v.colorName, v.hex, v.image, v.images ? JSON.stringify(v.images) : JSON.stringify(v.image ? [v.image] : []), v.stock ?? 10]
-        );
+      if (data.variants && Array.isArray(data.variants)) {
+        await conn.execute('DELETE FROM ProductVariant WHERE productId = ?', [productId]);
+        for (const v of data.variants) {
+          await conn.execute(
+            'INSERT INTO ProductVariant (productId, colorName, hex, image, images, stock) VALUES (?, ?, ?, ?, ?, ?)',
+            [productId, v.colorName || 'Default', v.hex || '#000000', v.image || '', v.images ? JSON.stringify(v.images) : JSON.stringify(v.image ? [v.image] : []), v.stock ?? 10]
+          );
+        }
+      } else if (data.image) {
+        const [existing] = await conn.execute('SELECT id FROM ProductVariant WHERE productId = ? ORDER BY id ASC LIMIT 1', [productId]);
+        const existingRows = existing as VariantRow[];
+        if (existingRows.length > 0) {
+          await conn.execute('UPDATE ProductVariant SET image=?, images=? WHERE id=?', [data.image, JSON.stringify([data.image]), existingRows[0].id]);
+        } else {
+          await conn.execute('INSERT INTO ProductVariant (productId, colorName, hex, image, images, stock) VALUES (?, ?, ?, ?, ?, ?)',
+            [productId, 'Default', '#000000', data.image, JSON.stringify([data.image]), 10]);
+        }
       }
-    } else if (data.image) {
-      const existing = await query<VariantRow>('SELECT id FROM ProductVariant WHERE productId = ? ORDER BY id ASC LIMIT 1', [productId]);
-      if (existing.length > 0) {
-        await query('UPDATE ProductVariant SET image=?, images=? WHERE id=?', [data.image, JSON.stringify([data.image]), existing[0].id]);
-      } else {
-        await query('INSERT INTO ProductVariant (productId, colorName, hex, image, images, stock) VALUES (?, ?, ?, ?, ?, ?)',
-          [productId, 'Default', '#000000', data.image, JSON.stringify([data.image]), 10]);
-      }
-    }
 
-    const updated = await query<ProductRow>('SELECT * FROM Product WHERE id = ? LIMIT 1', [productId]);
-    const variants = await query<VariantRow>('SELECT * FROM ProductVariant WHERE productId = ?', [productId]);
-    if (!updated[0]) {
-      updateCachedProduct(productId, data);
-      return NextResponse.json(getCachedProduct(productId));
-    }
-    return NextResponse.json({ ...updated[0], variants });
-  } catch {
-    updateCachedProduct(productId, data);
-    return NextResponse.json(getCachedProduct(productId));
+      const [updated] = await conn.execute('SELECT * FROM Product WHERE id = ? LIMIT 1', [productId]);
+      const [variants] = await conn.execute('SELECT * FROM ProductVariant WHERE productId = ?', [productId]);
+      const productRows = updated as ProductRow[];
+      if (!productRows[0]) {
+        throw new Error('Product not found after update');
+      }
+      return { ...productRows[0], variants: variants as VariantRow[] };
+    });
+
+    return NextResponse.json(result);
+  } catch (err) {
+    const error = err as Error;
+    console.error(`[ERROR] Products PUT error for ID ${productId}:`, error);
+    return NextResponse.json({ error: error.message || 'Failed to update product' }, { status: 500 });
   }
 }
 
@@ -101,13 +123,17 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   if (isNaN(productId)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
 
   try {
-    await query('DELETE FROM ProductVariant WHERE productId = ?', [productId]);
-    await query('DELETE FROM ProductDetail WHERE productId = ?', [productId]);
-    await query('DELETE FROM Review WHERE productId = ?', [productId]);
-    await query('DELETE FROM Question WHERE productId = ?', [productId]);
-    await query('DELETE FROM Product WHERE id = ?', [productId]);
+    await withTransaction(async (conn) => {
+      await conn.execute('DELETE FROM ProductVariant WHERE productId = ?', [productId]);
+      await conn.execute('DELETE FROM ProductDetail WHERE productId = ?', [productId]);
+      await conn.execute('DELETE FROM Review WHERE productId = ?', [productId]);
+      await conn.execute('DELETE FROM Question WHERE productId = ?', [productId]);
+      await conn.execute('DELETE FROM Product WHERE id = ?', [productId]);
+    });
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ success: true });
+  } catch (err) {
+    const error = err as Error;
+    console.error(`[ERROR] Products DELETE error for ID ${productId}:`, error);
+    return NextResponse.json({ error: error.message || 'Failed to delete product' }, { status: 500 });
   }
 }

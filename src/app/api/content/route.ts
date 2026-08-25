@@ -25,11 +25,25 @@ export async function POST(request: NextRequest) {
   if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   try {
     const data = await request.json();
-    await query('INSERT INTO ContentSection (page, section, title, body, image, sortOrder) VALUES (?, ?, ?, ?, ?, ?)',
-      [data.page, data.section, data.title || null, data.body || null, data.image || null, data.sortOrder ?? 0]);
+    await query(
+      'INSERT INTO ContentSection (page, section, title, subtitle, description, image, linkUrl, linkText, sortOrder, active, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW())',
+      [
+        data.page,
+        data.section,
+        data.title || null,
+        data.subtitle || null,
+        data.description || null,
+        data.image || null,
+        data.linkUrl || null,
+        data.linkText || null,
+        data.sortOrder ?? 0
+      ]
+    );
     const created = await query<ContentRow>('SELECT * FROM ContentSection ORDER BY id DESC LIMIT 1');
     return NextResponse.json(created[0], { status: 201 });
-  } catch {
-    return NextResponse.json({ error: 'Failed to create content' }, { status: 500 });
+  } catch (err) {
+    const error = err as Error;
+    console.error('[ERROR] Content Section POST error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to create content' }, { status: 500 });
   }
 }

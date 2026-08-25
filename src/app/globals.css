@@ -1,14 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-outfit: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #121212;
+  --background: #FFFFFF;
+  --foreground: #1E293B;
+  --organic-terracotta: #C85A32;
+  --organic-emerald: #2D6A4F;
+  --organic-amber: #D97706;
+  --organic-light-bg: #FFFDF9;
 }
 
 body {
@@ -20,46 +24,37 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6, .font-display {
-  font-family: var(--font-outfit);
+h1, h2, h3, h4, h5, h6, .font-serif {
+  font-family: var(--font-serif);
 }
 
-/* Lenis Smooth Scroll Configuration */
-html.lenis,
-html.lenis body {
-  height: auto;
+/* Hide Horizontal Scrollbar Everywhere */
+.no-scrollbar::-webkit-scrollbar,
+::-webkit-scrollbar:horizontal {
+  display: none !important;
+  height: 0px !important;
+  width: 0px !important;
 }
 
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
+.no-scrollbar {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
 }
 
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
+/* Light Elegant Vertical Scrollbar */
+::-webkit-scrollbar:vertical {
+  width: 6px;
 }
 
-.lenis.lenis-stopped {
-  overflow: hidden;
+::-webkit-scrollbar-track:vertical {
+  background: #FFFDF9;
 }
 
-.lenis.lenis-scrolling iframe {
-  pointer-events: none;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+::-webkit-scrollbar-thumb:vertical {
+  background: #C85A32;
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+::-webkit-scrollbar-thumb:vertical:hover {
+  background: #B04C27;
 }

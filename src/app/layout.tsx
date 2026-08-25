@@ -8,8 +8,8 @@ import AuthModal from "../components/AuthModal";
 import WhatsAppButton from "../components/WhatsAppButton";
 
 export const metadata: Metadata = {
-  title: "AERTH | Premium Sportswear & Activewear",
-  description: "Made for movement. Discover high-performance leggings, sports bras, and workout gear designed to elevate your form.",
+  title: "Organic Traditions | 100% Certified Organic Superfoods & Dry Fruits",
+  description: "Nourish your body with raw almonds, jumbo cashews, ashwagandha, maca, Medjool dates, and functional lattes.",
 };
 
 export default function RootLayout({

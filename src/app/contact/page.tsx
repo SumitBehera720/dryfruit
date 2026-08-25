@@ -89,7 +89,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Address</p>
-                    <p className="text-sm font-semibold text-black">AERTH Activewear</p>
+                    <p className="text-sm font-semibold text-black">Organic Traditions</p>
                     <p className="text-xs text-zinc-500 mt-0.5 leading-relaxed">Mumbai, Maharashtra, India</p>
                   </div>
                 </div>

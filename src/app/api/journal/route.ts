@@ -19,12 +19,14 @@ export async function POST(request: NextRequest) {
   if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   try {
     const data = await request.json();
-    await query('INSERT INTO JournalPost (title, excerpt, author, category, active, image, date) VALUES (?, ?, ?, ?, ?, ?, NOW())',
+    await query('INSERT INTO JournalPost (title, excerpt, author, category, active, image, date, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), NOW())',
       [data.title, data.excerpt, data.author, data.category, data.active ? 1 : 0, data.image || null]);
     const created = await query<JournalRow>('SELECT * FROM JournalPost ORDER BY id DESC LIMIT 1');
     return NextResponse.json(created[0], { status: 201 });
-  } catch {
-    return NextResponse.json({ error: 'Failed to create journal post' }, { status: 500 });
+  } catch (err) {
+    const error = err as Error;
+    console.error('[ERROR] Journal POST error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to create journal post' }, { status: 500 });
   }
 }
 
@@ -33,12 +35,14 @@ export async function PUT(request: NextRequest) {
   if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   try {
     const data = await request.json();
-    await query('UPDATE JournalPost SET title=?, excerpt=?, author=?, category=?, active=?, image=? WHERE id=?',
+    await query('UPDATE JournalPost SET title=?, excerpt=?, author=?, category=?, active=?, image=?, updatedAt=NOW() WHERE id=?',
       [data.title, data.excerpt, data.author, data.category, data.active ? 1 : 0, data.image || null, parseInt(data.id)]);
     const updated = await query<JournalRow>('SELECT * FROM JournalPost WHERE id = ? LIMIT 1', [parseInt(data.id)]);
     return NextResponse.json({ ...updated[0], active: Boolean(updated[0]?.active) });
-  } catch {
-    return NextResponse.json({ error: 'Failed to update journal post' }, { status: 500 });
+  } catch (err) {
+    const error = err as Error;
+    console.error(`[ERROR] Journal PUT error for ID ${request.url}:`, error);
+    return NextResponse.json({ error: error.message || 'Failed to update journal post' }, { status: 500 });
   }
 }
 
@@ -49,7 +53,9 @@ export async function DELETE(request: NextRequest) {
     const { id } = await request.json();
     await query('DELETE FROM JournalPost WHERE id = ?', [parseInt(id)]);
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: 'Failed to delete journal post' }, { status: 500 });
+  } catch (err) {
+    const error = err as Error;
+    console.error(`[ERROR] Journal DELETE error:`, error);
+    return NextResponse.json({ error: error.message || 'Failed to delete journal post' }, { status: 500 });
   }
 }

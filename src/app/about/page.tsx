@@ -4,14 +4,13 @@ import React, { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Sparkles, Compass, Wind, Layers, ArrowRight } from 'lucide-react';
+import { Sparkles, Sun, Leaf, ShieldCheck, ArrowRight } from 'lucide-react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
 export default function AboutPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Overall scroll trackers
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end end']
@@ -23,13 +22,10 @@ export default function AboutPage() {
     offset: ['start start', 'end start']
   });
 
-  // Hero transformations
   const heroBgY = useTransform(heroScroll, [0, 1], ['0%', '20%']);
   const heroBgScale = useTransform(heroScroll, [0, 1], [1.05, 1.15]);
   const heroOpacity = useTransform(heroScroll, [0, 1], [1, 0]);
 
-  // Philosophy section background color interpolation
-  // It shifts the background between dark, light, and dark
   const bgStyle = useTransform(
     scrollYProgress,
     [0, 0.25, 0.5, 0.75, 1],
@@ -45,21 +41,21 @@ export default function AboutPage() {
   const pillars = [
     {
       num: '01',
-      title: 'AIR / Infinite Energy',
-      desc: 'Air represents breath, freedom, and the lightness of movement. We build garments that feel weightless, with structures that breathe, allowing you to focus entirely on your output.',
-      icon: <Wind className="w-6 h-6" />
+      title: 'PURITY / Direct Organic Sourcing',
+      desc: 'We source raw almonds, jumbo cashews, dates, and superfoods directly from certified organic orchards across California, Kashmir, Arabia, and Iran.',
+      icon: <Leaf className="w-6 h-6 text-amber-400" />
     },
     {
       num: '02',
-      title: 'EARTH / Grounded Strength',
-      desc: 'Earth represents stability, resilience, and form. Our compression technology supports and aligns, grounding your posture and boosting muscle memory for every squat and sprint.',
-      icon: <Layers className="w-6 h-6" />
+      title: 'FRESHNESS / Vacuum Sealed Quality',
+      desc: 'Our nitrogen-flushed, vacuum-sealed packaging locks in natural essential oils, peak crispness, and nutrient density without artificial preservatives.',
+      icon: <ShieldCheck className="w-6 h-6 text-amber-400" />
     },
     {
       num: '03',
-      title: 'BALANCE / Human Focus',
-      desc: 'True performance exists in the equilibrium between these forces. Every seam we omit, every fiber we select, and every cut we design is a pursuit of this harmony.',
-      icon: <Compass className="w-6 h-6" />
+      title: 'WELLNESS / Daily Superfood Nutrition',
+      desc: '100% Raw, non-GMO, and zero refined sugars. Pure plant power rich in Omega-3, fiber, and antioxidants to fuel your holistic daily health.',
+      icon: <Sun className="w-6 h-6 text-amber-400" />
     }
   ];
 
@@ -70,20 +66,20 @@ export default function AboutPage() {
       <main ref={containerRef} className="flex-1 overflow-hidden">
         
         {/* Parallax Hero Section */}
-        <section ref={heroRef} className="relative h-[90vh] flex items-center justify-center overflow-hidden">
+        <section ref={heroRef} className="relative h-[85vh] flex items-center justify-center overflow-hidden">
           <motion.div 
             className="absolute inset-0 z-0"
             style={{ y: heroBgY, scale: heroBgScale }}
           >
             <Image 
               src="/images/story_bg.png" 
-              alt="AERTH Brand Story Hero" 
+              alt="Just Naturals Brand Story Hero" 
               fill
               priority
               className="object-cover object-center brightness-[0.4]"
             />
           </motion.div>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-[#09090b] z-10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-[#09090b] z-10" />
 
           <motion.div 
             style={{ opacity: heroOpacity }}
@@ -93,32 +89,34 @@ export default function AboutPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-zinc-400 font-bold flex justify-center items-center gap-1.5"
+              className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-amber-400 font-bold flex justify-center items-center gap-1.5"
             >
-              <Sparkles className="w-4 h-4 text-zinc-400" />
-              The Aerth Manifest
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              Our Organic Promise
             </motion.span>
+
             <motion.h1 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.15 }}
               className="text-4xl md:text-7xl font-extrabold uppercase tracking-widest leading-none"
             >
-              Inspired By Air.<br />
-              <span className="text-zinc-500">Grounded In Earth.</span>
+              Nurtured By Nature.<br />
+              <span className="text-amber-300">Delivered Pure.</span>
             </motion.h1>
+
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
               className="text-zinc-400 text-xs md:text-sm tracking-widest max-w-lg mx-auto font-light leading-relaxed uppercase"
             >
-              We engineer athletic apparel to exist in perfect harmony with the natural physics of human motion.
+              Handpicked raw almonds, jumbo cashews, dates, and artisanal superfoods packed fresh for your daily health.
             </motion.p>
           </motion.div>
         </section>
 
-        {/* Brand Philosophy - Vertical Scroll Transition */}
+        {/* Brand Philosophy */}
         <section className="py-24 md:py-36 flex items-center relative z-10">
           <div className="max-w-5xl mx-auto px-4 md:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -133,7 +131,7 @@ export default function AboutPage() {
                   style={{ color: textThemeColor }}
                   className="text-3xl md:text-5xl font-extrabold uppercase tracking-widest mt-3 transition-colors duration-500 leading-tight"
                 >
-                  Form In<br />Equilibrium.
+                  Pure Harvest.<br />Zero Compromise.
                 </motion.h2>
               </div>
               <div className="lg:col-span-7">
@@ -141,20 +139,20 @@ export default function AboutPage() {
                   style={{ color: textThemeColor }}
                   className="text-sm md:text-lg font-light tracking-wide leading-relaxed transition-colors duration-500 font-sans"
                 >
-                  AERTH is built on the belief that activewear should not just cover the body, but empower the athlete. By merging the fluid weightlessness of air with the rigid strength of earth, we design garments that elevate your form and stabilize your core. 
+                  Just Naturals was founded on a simple belief: daily nutrition should be 100% unadulterated and farm-fresh. We eliminate middle brokers, working directly with organic growers to bring you the highest grade of nuts, dates, and superfood seeds.
                 </motion.p>
                 <motion.p 
                   style={{ color: textThemeColor }}
                   className="text-sm md:text-lg font-light tracking-wide leading-relaxed transition-colors duration-500 font-sans mt-6"
                 >
-                  Every weave, seam, and detail is calculated. We utilize Italian circular knitting technology to deliver absolute seamlessness, combined with targeted high-compression panels that lift, shape, and support.
+                  Every batch undergoes multi-stage quality checks for size, moisture, and crispness before being vacuum sealed in eco-friendly, food-grade packaging.
                 </motion.p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Brand Pillars - Dynamic Theme-Aware Cards */}
+        {/* Brand Pillars */}
         <section className="py-24 md:py-36 relative z-10 border-t border-b" style={{ borderColor: 'transparent' }}>
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <div className="text-center mb-16 md:mb-24">
@@ -162,13 +160,13 @@ export default function AboutPage() {
                 style={{ color: textThemeColor }}
                 className="text-[10px] md:text-xs uppercase tracking-[0.3em] font-semibold transition-colors duration-500"
               >
-                Pillars of Aerth
+                Our Core Commitments
               </motion.span>
               <motion.h3 
                 style={{ color: textThemeColor }}
                 className="text-2xl md:text-4xl font-extrabold uppercase tracking-widest mt-2 transition-colors duration-500"
               >
-                The Three Forces
+                The Three Pillars of Quality
               </motion.h3>
             </div>
 
@@ -187,9 +185,6 @@ export default function AboutPage() {
                     backdropFilter: 'blur(10px)',
                   }}
                 >
-                  {/* Hover background highlight */}
-                  <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
                   <div className="space-y-6">
                     <motion.div 
                       style={{ color: textThemeColor }}
@@ -197,84 +192,28 @@ export default function AboutPage() {
                     >
                       {pillar.icon}
                     </motion.div>
-                    
-                    <div className="space-y-2">
-                      <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-                        {pillar.num}
-                      </span>
-                      <motion.h4 
-                        style={{ color: textThemeColor }}
-                        className="text-base md:text-lg font-bold uppercase tracking-wider transition-colors duration-500"
-                      >
-                        {pillar.title}
-                      </motion.h4>
+                    <div>
+                      <span className="text-[10px] font-bold tracking-widest uppercase text-amber-400">{pillar.num}</span>
+                      <h4 className="text-lg md:text-xl font-bold uppercase tracking-wider mt-1 text-white">{pillar.title}</h4>
+                      <p className="text-xs md:text-sm text-zinc-300 font-light leading-relaxed mt-3">{pillar.desc}</p>
                     </div>
                   </div>
-
-                  <motion.p 
-                    style={{ color: textThemeColor }}
-                    className="text-xs md:text-sm font-light leading-relaxed tracking-wide opacity-85 transition-colors duration-500"
-                  >
-                    {pillar.desc}
-                  </motion.p>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Final CTA Showcase Section */}
-        <section className="py-24 md:py-36 relative z-10 text-center flex items-center justify-center">
-          <div className="max-w-4xl mx-auto px-4 space-y-8">
-            <motion.span 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-zinc-500 font-bold block"
-            >
-              The Next Evolution
-            </motion.span>
-            
-            <motion.h2 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="text-3xl md:text-6xl font-extrabold uppercase tracking-widest leading-tight text-white"
-            >
-              Experience The Difference
-            </motion.h2>
-            
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.15 }}
-              className="text-zinc-400 text-xs md:text-sm tracking-widest max-w-md mx-auto font-light leading-relaxed uppercase"
-            >
-              Discover pieces engineered with Italian seamless knitting and high-compression waistbands.
-            </motion.p>
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="pt-4"
-            >
-              <Link 
-                href="/shop" 
-                className="inline-flex items-center gap-2 bg-white hover:bg-zinc-100 text-black font-bold text-xs uppercase tracking-widest px-10 py-5 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 rounded-xl"
-              >
-                Browse Collections
-                <ArrowRight className="w-4 h-4 text-black" />
-              </Link>
-            </motion.div>
+        <section className="py-24 text-center text-white relative z-10 bg-black">
+          <div className="max-w-2xl mx-auto px-4 space-y-6">
+            <h2 className="text-2xl md:text-4xl font-extrabold uppercase tracking-widest">Experience Pure Nutrition</h2>
+            <p className="text-zinc-400 text-xs md:text-sm font-light tracking-wider uppercase">Explore our full range of raw nuts, Medjool dates, and superfood hampers.</p>
+            <Link href="/shop" className="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-widest px-8 py-4 rounded-xl transition-all shadow-lg">
+              Explore Superfoods Catalog <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </section>
-
       </main>
-
       <Footer />
     </motion.div>
   );

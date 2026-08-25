@@ -31,7 +31,7 @@ export default function PrivacyPage() {
           {/* Content Document */}
           <div className="bg-white border border-zinc-100 rounded-2xl shadow-sm p-8 md:p-12 space-y-8">
             <p className="text-xs text-zinc-500 font-light leading-relaxed uppercase tracking-wider">
-              AERTH Sportswear is committed to safeguarding your personal privacy. This policy outlines how we collect, store, and utilize data.
+              Organic Traditions is committed to safeguarding your personal privacy. This policy outlines how we collect, store, and utilize data.
             </p>
             
             <div className="space-y-6">

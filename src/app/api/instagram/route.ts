@@ -5,10 +5,10 @@ import { getSettings, saveSettings } from '@/lib/settings-store';
 const INSTAGRAM_KEY = 'instagram_gallery';
 
 const defaultGallery = [
-  { id: '1', image: '/images/product_plum_leggings.png', link: 'https://instagram.com' },
-  { id: '2', image: '/images/product_black_leggings.png', link: 'https://instagram.com' },
-  { id: '3', image: '/images/product_black_flare.png', link: 'https://instagram.com' },
-  { id: '4', image: '/images/product_black_shorts.png', link: 'https://instagram.com' },
+  { id: '1', image: '/images/dryfruit_almonds.png', link: 'https://instagram.com' },
+  { id: '2', image: '/images/dryfruit_cashews.png', link: 'https://instagram.com' },
+  { id: '3', image: '/images/dryfruit_pistachios.png', link: 'https://instagram.com' },
+  { id: '4', image: '/images/dryfruit_dates.png', link: 'https://instagram.com' },
 ];
 
 export async function GET() {

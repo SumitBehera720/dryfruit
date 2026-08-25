@@ -6,7 +6,7 @@ export interface JwtPayload {
   role: string;
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'aerth-jwt-secret-2026-qubnix';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key-placeholder';
 export const COOKIE_NAME = 'aerth_token';
 
 export async function verifyTokenEdge(token: string): Promise<JwtPayload | null> {

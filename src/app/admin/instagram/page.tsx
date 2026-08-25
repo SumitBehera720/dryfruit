@@ -45,14 +45,20 @@ export default function AdminInstagramPage() {
 
     setUploading(true);
     setError('');
-    const formData = new FormData();
-    formData.append('file', file);
 
     try {
+      // Read file as Base64 data URL to bypass CDN multipart filtering
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+      });
+
       const res = await fetch('/api/upload', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: dataUrl, name: file.name, type: file.type }),
       });
 
       if (!res.ok) throw new Error('Upload failed');

@@ -1,158 +1,381 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart, ArrowUpRight } from 'lucide-react';
-import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
+import { Heart, Star, ShoppingBag, Check, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
-interface Variant {
-  id: number;
-  colorName: string;
-  hex: string;
-  image: string;
-  gallery: string;
-  stock: number;
-}
-
-interface Product {
-  id: number;
+interface BestSellerProduct {
+  id: string;
   slug: string;
   name: string;
   price: number;
-  label: string | null;
+  originalPrice?: number;
+  label: string;
   category: string;
-  gender: string;
-  description: string;
-  variants: Variant[];
+  categoryLabel: string;
+  image: string;
+  rating: number;
+  reviewsCount: number;
+  packSize: string;
 }
+
+const tenBestSellers: BestSellerProduct[] = [
+  {
+    id: 'prod_01KQK72S7DV29E6JXEGD8CK59G',
+    slug: 'beets-and-berries-wellness-powder',
+    name: 'Beets & Berries Wellness Powder',
+    price: 849,
+    originalPrice: 899,
+    label: 'BESTSELLER',
+    category: 'superfood-powders',
+    categoryLabel: 'Superfood Powder',
+    image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/7d2f74bd-e0b5-4819-ac21-c3bfa725bd23.png',
+    rating: 4.9,
+    reviewsCount: 142,
+    packSize: '100g Pouch',
+  },
+  {
+    id: 'prod_01KQK72S76K300GRQ38ADXSED3',
+    slug: 'ginger-turmeric-orange-wellness-shots',
+    name: 'Ginger Turmeric Orange Shot Powder',
+    price: 699,
+    originalPrice: 749,
+    label: 'IMMUNITY SHOTS',
+    category: 'wellness-shots',
+    categoryLabel: 'Wellness Shots',
+    image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/86b23630-70dc-4217-84a2-bb05b849de48.png',
+    rating: 4.9,
+    reviewsCount: 118,
+    packSize: '70g Jar',
+  },
+  {
+    id: 'prod_01KQK72S7Y3RTM6F3QP8N3FFD8',
+    slug: 'wild-blueberry-powder-raw-unsweetened',
+    name: 'Wild Blueberry Powder Raw Unsweetened',
+    price: 949,
+    originalPrice: 999,
+    label: 'BRAIN SUPPORT',
+    category: 'superfood-powders',
+    categoryLabel: 'Superberry Powder',
+    image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/34f19c4e-c99c-4368-b41c-23aac91a46d6.jpg',
+    rating: 4.9,
+    reviewsCount: 96,
+    packSize: '100g Pouch',
+  },
+  {
+    id: 'prod_01KQK72S7KJM6EJAJJ1PEC7VAV',
+    slug: 'celery-powder-dehydrated',
+    name: 'Organic Celery Powder Dehydrated',
+    price: 599,
+    originalPrice: 649,
+    label: 'DETOX & CLEANSE',
+    category: 'smoothie-boosters',
+    categoryLabel: 'Smoothie Booster',
+    image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/43deeea0-f7e9-4ddb-8a11-3fa466ef47da.png',
+    rating: 4.8,
+    reviewsCount: 84,
+    packSize: '80g Pouch',
+  },
+  {
+    id: 'prod_01KQK72SGF9MCTHYA0CZNR1PH6',
+    slug: 'organic-cinnamon-apples-40g',
+    name: 'Apple Cinnamon Bites',
+    price: 399,
+    originalPrice: 449,
+    label: 'CHEWY SNACK',
+    category: 'dried-fruits',
+    categoryLabel: 'Dried Fruits',
+    image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/83979956-2864-4b17-956b-c1bcae5e8b51.jpg',
+    rating: 4.9,
+    reviewsCount: 165,
+    packSize: '40g Pouch',
+  },
+  {
+    id: 'prod_01KQK72SG3VCMKCQMX2HFGZ3VD',
+    slug: 'turmeric-ginger-black-pepper-latte-mix-40-cups-70g-246oz',
+    name: 'Turmeric Ginger Superfood Blend',
+    price: 699,
+    originalPrice: 749,
+    label: 'GOLDEN LATTE',
+    category: 'herbal-teas',
+    categoryLabel: 'Herbal Tea',
+    image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/a2fc82bd-9691-489a-a82f-69518a23cf96.png',
+    rating: 4.8,
+    reviewsCount: 72,
+    packSize: '70g Jar',
+  },
+  {
+    id: 'prod_01KQK72SC0HZVSHKHTRJNDD0CN',
+    slug: 'beetroot-powder-raw',
+    name: 'Organic Beetroot Powder',
+    price: 649,
+    originalPrice: 699,
+    label: 'NITRATE BOOST',
+    category: 'superfood-powders',
+    categoryLabel: 'Superfood Powder',
+    image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/05407492-606f-4d8f-8de4-33ac851dc01d.jpg',
+    rating: 4.8,
+    reviewsCount: 58,
+    packSize: '100g Pouch',
+  },
+  {
+    id: 'prod_01KQK72SCHM2JCESFFWJ2QHPDY',
+    slug: 'dried-orange-slices-60g',
+    name: 'Dried Orange Slices',
+    price: 499,
+    originalPrice: 549,
+    label: 'CITRUS GARNISH',
+    category: 'dried-fruits',
+    categoryLabel: 'Dried Fruits',
+    image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/c96e1a95-6f92-402f-8dfc-c8c853ba28e2.jpg',
+    rating: 4.9,
+    reviewsCount: 210,
+    packSize: '60g Pouch',
+  },
+  {
+    id: 'prod_01KQK72SFXS78NAK0JE3A0Y2VM',
+    slug: 'dried-organic-apple-rings-slices-no-sugar-added-perfect-for-the-entire-family-made-in-canada',
+    name: 'Just Apples Dried Apple Slices',
+    price: 449,
+    originalPrice: 499,
+    label: 'NO ADDED SUGAR',
+    category: 'dried-fruits',
+    categoryLabel: 'Dried Fruits',
+    image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/f2af55ca-3dd2-46c9-9c8d-579f4073a127.jpg',
+    rating: 4.8,
+    reviewsCount: 134,
+    packSize: '50g Pouch',
+  },
+  {
+    id: 'prod_01KQK72S3T7CHH8S1QSQPKJ9Y2',
+    slug: 'canadian-wild-blueberries-dehydrated',
+    name: 'Wild Blueberry Dehydrated Chewy',
+    price: 899,
+    originalPrice: 949,
+    label: 'CANADIAN WILD',
+    category: 'dried-fruits',
+    categoryLabel: 'Dried Fruits',
+    image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/182aadd4-eb63-440c-9532-1c52154d6c44.png',
+    rating: 4.9,
+    reviewsCount: 189,
+    packSize: '100g Pouch',
+  },
+];
+
+const categoryTabs = [
+  { id: 'ALL', label: 'ALL BEST SELLERS' },
+  { id: 'superfood-powders', label: 'SUPERFOOD POWDERS' },
+  { id: 'wellness-shots', label: 'WELLNESS SHOTS' },
+  { id: 'herbal-teas', label: 'HERBAL LATTES & TEAS' },
+  { id: 'dried-fruits', label: 'DRIED FRUIT SNACKS' },
+];
 
 export default function BestSellers() {
   const { addToCart } = useCart();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('ALL');
   const [wishlist, setWishlist] = useState<string[]>([]);
-  const [activeVariants, setActiveVariants] = useState<Record<number, number>>({});
+  const [addedItem, setAddedItem] = useState<string | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    fetch('/api/products?limit=4')
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data);
-        const defaults: Record<number, number> = {};
-        data.forEach((p: Product) => { defaults[p.id] = 0; });
-        setActiveVariants(defaults);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+  const filteredProducts = activeTab === 'ALL'
+    ? tenBestSellers
+    : tenBestSellers.filter((p) => p.category === activeTab);
 
-  const handleSwatchClick = (productId: number, variantIndex: number) => {
-    setActiveVariants((prev) => ({ ...prev, [productId]: variantIndex }));
+  const toggleWishlist = (id: string) => {
+    setWishlist((prev) => prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]);
   };
 
-  const toggleWishlist = (productId: number) => {
-    const id = String(productId);
-    setWishlist((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
-  };
-
-  const handleAddToCart = (product: Product) => {
-    const activeIndex = activeVariants[product.id] || 0;
-    const variant = product.variants[activeIndex];
-    if (!variant) return;
-
+  const handleAddToCart = (product: BestSellerProduct) => {
     addToCart({
-      id: `${product.slug}-${variant.colorName.toLowerCase().replace(/\s+/g, '-')}-s`,
+      id: `${product.slug}-${product.packSize.toLowerCase().replace(/\s+/g, '-')}`,
       name: product.name,
       price: product.price,
-      image: variant.image,
-      color: variant.colorName,
-      size: 'S',
+      image: product.image,
+      color: product.packSize,
+      size: product.packSize,
     });
+    setAddedItem(product.id);
+    setTimeout(() => setAddedItem(null), 2000);
   };
 
-  if (loading) {
-    return (
-      <section className="w-full bg-white py-16 md:py-24 font-sans">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="w-6 h-6 border-2 border-zinc-300 border-t-black rounded-full animate-spin" />
-          </div>
-        </div>
-      </section>
-    );
-  }
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = direction === 'left' ? -360 : 360;
+      scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   return (
-    <section className="w-full bg-white py-16 md:py-24 font-sans">
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-100px' }}
-        transition={{ duration: 0.8 }}
-        className="max-w-7xl mx-auto px-4 md:px-8"
-      >
-        <div className="flex justify-between items-end mb-12">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold uppercase tracking-widest text-black">Best Sellers</h2>
-            <p className="text-zinc-500 text-xs md:text-sm mt-1.5 tracking-wider font-light">Loved by thousands. Designed to perform.</p>
+    <section className="w-full bg-[#FFFDF9] py-16 md:py-24 font-sans text-[#1E293B] overflow-hidden">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10">
+        
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+          <div className="space-y-1">
+            <span className="text-[10px] md:text-xs uppercase tracking-[0.35em] text-[#C85A32] font-extrabold flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#C85A32]" />
+              MOST POPULAR CLEAN-LABEL FORMULAS
+            </span>
+            <h2 className="text-3xl md:text-5xl font-extrabold uppercase tracking-tight text-[#1E293B] font-serif">
+              Explore Best Sellers
+            </h2>
           </div>
-          <Link href="/shop" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-black border-b border-black pb-1 hover:opacity-75 transition-opacity">
-            View All Products <ArrowUpRight className="w-4 h-4" />
-          </Link>
+
+          {/* Navigation Controls */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => scroll('left')}
+              className="w-10 h-10 rounded-full bg-white border border-stone-200/80 hover:border-[#C85A32] shadow-sm flex items-center justify-center text-[#1E293B] hover:text-[#C85A32] transition-all cursor-pointer"
+              aria-label="Scroll Left"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => scroll('right')}
+              className="w-10 h-10 rounded-full bg-white border border-stone-200/80 hover:border-[#C85A32] shadow-sm flex items-center justify-center text-[#1E293B] hover:text-[#C85A32] transition-all cursor-pointer"
+              aria-label="Scroll Right"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
-          {products.map((product) => {
-            const activeIdx = activeVariants[product.id] ?? 0;
-            const activeVariant = product.variants[activeIdx];
-            const isWishlisted = wishlist.includes(String(product.id));
-            if (!activeVariant) return null;
+        {/* Sub-navigation Tabs Bar */}
+        <div className="border-b border-stone-200/80 mb-10 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-6 md:gap-8 pb-3 min-w-max">
+            {categoryTabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`text-xs md:text-sm uppercase tracking-widest transition-all duration-200 pb-2 border-b-2 font-sans ${
+                    isActive
+                      ? 'text-[#C85A32] font-extrabold border-[#C85A32]'
+                      : 'text-slate-400 border-transparent hover:text-slate-700 font-medium'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Side-by-Side Horizontal Scroll Container */}
+        <div
+          ref={scrollContainerRef}
+          className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar pb-6 pt-1"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {filteredProducts.map((product) => {
+            const isWishlisted = wishlist.includes(product.id);
+            const isAdded = addedItem === product.id;
 
             return (
-              <div key={product.id} className="flex flex-col group relative">
-                <div className="aspect-[3/4] bg-zinc-50 relative overflow-hidden rounded-xl">
-                  {product.label && (
-                    <span className="absolute top-4 left-4 bg-black text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-sm z-10">{product.label}</span>
-                  )}
-                  <button onClick={() => toggleWishlist(product.id)} className="absolute top-4 right-4 bg-white hover:bg-zinc-50 text-zinc-800 hover:text-black p-2 rounded-full border border-zinc-100 shadow-md hover:shadow-lg transition-all duration-300 z-10" aria-label="Wishlist">
-                    <Heart className={`w-4 h-4 transition-transform duration-300 ${isWishlisted ? 'fill-red-500 stroke-red-500 scale-110' : 'stroke-zinc-700'}`} />
+              <div
+                key={product.id}
+                className="w-[300px] sm:w-[330px] md:w-[350px] flex-shrink-0 snap-start group relative bg-white rounded-3xl border border-stone-200/80 hover:border-[#C85A32]/60 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between overflow-hidden"
+              >
+                {/* Top Badge & Wishlist Heart */}
+                <div className="absolute top-4 inset-x-4 flex justify-between items-center z-20">
+                  <span className="bg-[#C85A32] text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-lg shadow-sm">
+                    {product.label}
+                  </span>
+
+                  <button
+                    onClick={() => toggleWishlist(product.id)}
+                    className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-stone-200 flex items-center justify-center text-slate-500 hover:text-red-500 hover:border-red-200 transition-all shadow-md"
+                    aria-label="Add to wishlist"
+                  >
+                    <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
                   </button>
-                  <Link href={`/product/${product.slug}`} className="w-full h-full relative block cursor-pointer">
-                    <Image src={activeVariant.image} alt={product.name} fill sizes="(max-w-720px) 100vw, 25vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                  </Link>
-                  <div className="absolute inset-x-4 bottom-4 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                    <button onClick={() => handleAddToCart(product)} className="w-full bg-black hover:bg-zinc-900 text-white font-bold text-xs uppercase tracking-widest py-3 shadow-lg transition-colors">Quick Add</button>
-                  </div>
                 </div>
-                <div className="mt-4 flex flex-col space-y-2">
-                  <div className="flex gap-2">
-                    {product.variants.map((v, index) => (
-                      <button key={v.id} onClick={() => handleSwatchClick(product.id, index)}
-                        className={`w-4 h-4 rounded-full border relative ${index === activeIdx ? 'border-black ring-1 ring-black' : 'border-zinc-300'}`}
-                        style={{ backgroundColor: v.hex }} title={v.colorName} />
-                    ))}
-                  </div>
-                  <div>
-                    <Link href={`/product/${product.slug}`} className="hover:underline">
-                      <h3 className="text-sm font-bold uppercase tracking-wider text-black">{product.name}</h3>
+
+                {/* Product Image Container (Bigger high-impact image display) */}
+                <Link href={`/product/${product.slug}`} className="relative aspect-square w-full bg-gradient-to-b from-[#FFF5ED]/60 to-[#FFFDF9] overflow-hidden block p-2 pt-10">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    sizes="350px"
+                    className="object-contain p-2 transition-transform duration-700 ease-out group-hover:scale-110 drop-shadow-md"
+                  />
+                </Link>
+
+                {/* Card Info & Details */}
+                <div className="p-6 flex flex-col justify-between flex-1 space-y-4">
+                  <div className="space-y-2">
+                    {/* Category Pill & Rating */}
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-slate-400 uppercase tracking-widest font-extrabold text-[10px]">
+                        {product.categoryLabel}
+                      </span>
+                      <div className="flex items-center gap-1 text-[#D97706] font-extrabold">
+                        <Star className="w-3.5 h-3.5 fill-current" />
+                        <span>{product.rating}</span>
+                        <span className="text-slate-400 font-normal">({product.reviewsCount})</span>
+                      </div>
+                    </div>
+
+                    {/* Title */}
+                    <Link href={`/product/${product.slug}`} className="block group-hover:text-[#C85A32] transition-colors">
+                      <h3 className="text-lg font-extrabold uppercase tracking-wide text-[#1E293B] font-serif leading-snug line-clamp-2">
+                        {product.name}
+                      </h3>
                     </Link>
-                    <p className="text-zinc-500 text-[11px] tracking-wider uppercase mt-0.5">{activeVariant.colorName}</p>
                   </div>
-                  <p className="text-sm font-bold text-black mt-1">₹{product.price.toLocaleString('en-IN')}</p>
+
+                  {/* Pack Size & Pricing */}
+                  <div className="flex justify-between items-end pt-3 border-t border-stone-100">
+                    <div>
+                      <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">
+                        {product.packSize}
+                      </span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xl font-black text-[#1E293B]">
+                          ₹{product.price}
+                        </span>
+                        {product.originalPrice && (
+                          <span className="text-xs text-slate-400 line-through">
+                            ₹{product.originalPrice}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Add to Cart Button */}
+                    <button
+                      onClick={() => handleAddToCart(product)}
+                      className={`px-5 py-3 rounded-xl font-extrabold text-xs uppercase tracking-widest transition-all duration-300 flex items-center gap-2 shadow-md ${
+                        isAdded
+                          ? 'bg-emerald-700 text-white'
+                          : 'bg-[#C85A32] hover:bg-[#B04C27] text-white'
+                      }`}
+                    >
+                      {isAdded ? (
+                        <>
+                          <Check className="w-4 h-4" /> Added
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingBag className="w-4 h-4" /> Add
+                        </>
+                      )}
+                    </button>
+                  </div>
+
                 </div>
+
               </div>
             );
           })}
         </div>
 
-        <div className="mt-16 text-center">
-          <Link href="/shop" className="inline-block bg-black hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-widest px-10 py-4 shadow-lg transition-all duration-300 hover:shadow-xl">Shop All Products</Link>
-        </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

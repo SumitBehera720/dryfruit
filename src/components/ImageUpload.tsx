@@ -18,19 +18,34 @@ export default function ImageUpload({ value, onChange, label }: ImageUploadProps
     if (!file) return;
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append('file', file);
 
     try {
+      // Read file as Base64 data URL
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+      });
+
       const token = localStorage.getItem('aerth_admin_token');
       const res = await fetch('/api/upload', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: dataUrl,
+          name: file.name,
+          type: file.type,
+        }),
       });
       const data = await res.json();
       if (res.ok) {
         onChange(data.url);
+      } else {
+        console.error('Upload failed:', data.error);
       }
     } catch {
       console.error('Upload failed');

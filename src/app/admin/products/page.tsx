@@ -24,6 +24,7 @@ interface Product {
   gender: string;
   active: boolean;
   variants: Variant[];
+  description?: string;
 }
 
 const defaultForm = {
@@ -67,7 +68,7 @@ export default function AdminProductsPage() {
       label: product.label || '',
       category: product.category,
       gender: product.gender,
-      description: '',
+      description: product.description || '',
       image: product.variants?.[0]?.image || '',
       variants: product.variants?.map(v => ({ ...v, images: safeParse(v.images) })) || [],
     });
@@ -216,7 +217,7 @@ export default function AdminProductsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Category</label><select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black">
-                  <option value="leggings">Leggings</option><option value="shorts">Shorts</option><option value="bras">Bras</option><option value="tops">Tops</option><option value="jackets">Jackets</option>
+                  <option value="nuts">Nuts & Kernels</option><option value="dried-fruits">Dried Fruits & Dates</option><option value="seeds">Seeds & Mixes</option><option value="gifting">Exotic Gifting</option>
                 </select></div>
                 <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Gender</label><select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black">
                   <option value="women">Women</option><option value="men">Men</option><option value="unisex">Unisex</option>
@@ -276,11 +277,20 @@ function VariantImageUpload({ onUpload }: { onUpload: (url: string) => void }) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const formData = new FormData();
-    formData.append('file', file);
     try {
+      // Read file as Base64 data URL to bypass CDN multipart filtering
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+      });
       const token = localStorage.getItem('aerth_admin_token');
-      const res = await fetch('/api/upload', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: dataUrl, name: file.name, type: file.type }),
+      });
       const data = await res.json();
       if (res.ok) onUpload(data.url);
     } catch { console.error('Upload failed'); }

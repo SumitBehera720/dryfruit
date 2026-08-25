@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { NextRequest } from 'next/server';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'aerth-jwt-secret-2026-qubnix';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key-placeholder';
 
 export interface JwtPayload {
   userId: number;
@@ -52,3 +52,24 @@ export function requireAuth(request: NextRequest): JwtPayload | null {
   if (!token) return null;
   return verifyToken(token);
 }
+
+export type AuthResult = 
+  | { status: 200; payload: JwtPayload }
+  | { status: 401; error: string }
+  | { status: 403; error: string };
+
+export function authenticateAdmin(request: NextRequest): AuthResult {
+  const token = getTokenFromRequest(request);
+  if (!token) {
+    return { status: 401, error: 'Authentication required. No token provided.' };
+  }
+  const payload = verifyToken(token);
+  if (!payload) {
+    return { status: 401, error: 'Invalid or expired authentication token.' };
+  }
+  if (payload.role !== 'admin') {
+    return { status: 403, error: 'Forbidden. Admin privileges required.' };
+  }
+  return { status: 200, payload };
+}
+

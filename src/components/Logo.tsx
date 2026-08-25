@@ -7,19 +7,17 @@ interface LogoProps {
   className?: string;
 }
 
-export default function Logo({ className = 'h-6 w-auto' }: LogoProps) {
-  const isWhite = className.includes('text-white');
+export default function Logo({ className = 'h-9 w-auto' }: LogoProps) {
   return (
-    <Image
-      src="/images/fbc2edd4-5429-482c-957e-3536a862daad-removebg-preview.png"
-      alt="AERTH Logo"
-      width={120}
-      height={40}
-      className={className}
-      style={{
-        objectFit: 'contain',
-        filter: isWhite ? 'invert(1) hue-rotate(180deg)' : 'none',
-      }}
-    />
+    <div className={`relative flex items-center select-none ${className}`}>
+      <Image
+        src="/images/just_naturals_logo.png"
+        alt="Just Naturals Superfoods Logo"
+        width={220}
+        height={55}
+        priority
+        className="object-contain h-8 md:h-10 w-auto"
+      />
+    </div>
   );
 }

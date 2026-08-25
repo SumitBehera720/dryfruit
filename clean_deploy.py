@@ -1,10 +1,16 @@
 import paramiko, os, tarfile, time, sys
 
+SSH_HOST = os.getenv('SSH_HOST', 'your-server-ip')
+SSH_PORT = int(os.getenv('SSH_PORT', '22'))
+SSH_USER = os.getenv('SSH_USER', 'your-username')
+SSH_PASS = os.getenv('SSH_PASS', 'your-password')
+REMOTE_PATH = os.getenv('REMOTE_PATH', f'/home/{SSH_USER}/frontend')
+
 c = paramiko.SSHClient()
 c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-c.connect('145.79.58.122', port=65002, username='u892283443', password='Qubnix123@', timeout=15)
+c.connect(SSH_HOST, port=SSH_PORT, username=SSH_USER, password=SSH_PASS, timeout=15)
 
-FRONTEND = '/home/u892283443/frontend'
+FRONTEND = REMOTE_PATH
 F = FRONTEND + '/standalone'
 TMP = FRONTEND + '/standalone_tmp'
 LOCAL = os.getcwd()
@@ -111,9 +117,11 @@ safe_print('Files:', out[-300:] if len(out) > 300 else out)
 
 # Step 7: Recreate .env in tmp
 print('Creating .env...')
+db_url = os.getenv('DATABASE_URL', 'mysql://username:password@localhost:3306/dbname')
+jwt_secret = os.getenv('JWT_SECRET', 'your-jwt-secret-key')
 stdin, stdout, stderr = c.exec_command('cat > ' + TMP + '/.env')
-stdin.write('DATABASE_URL="mysql://u892283443_aerth:Qubnix123%40@localhost:3306/u892283443_aerth"\n')
-stdin.write('JWT_SECRET="aerth-jwt-secret-2026-qubnix"\n')
+stdin.write(f'DATABASE_URL="{db_url}"\n')
+stdin.write(f'JWT_SECRET="{jwt_secret}"\n')
 stdin.close()
 stdout.channel.recv_exit_status()
 

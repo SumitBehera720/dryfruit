@@ -46,11 +46,11 @@ export default function FAQsPage() {
       ]
     },
     {
-      title: 'Products & Sizing',
+      title: 'Superfoods & Storage',
       icon: <HelpCircle className="w-5 h-5 text-zinc-400" />,
       items: [
-        { q: 'How do I find my size?', a: 'Please refer to our interactive Size Guide page. We provide detailed measurement tables for both men and women.' },
-        { q: 'How should I wash my sportswear?', a: 'We recommend machine washing in cold water with similar colors. Avoid fabric softeners and tumble dry on low to preserve compression technology.' },
+        { q: 'How should I store raw almonds and dates?', a: 'Store in a cool, dry place away from direct sunlight. Once opened, keep in an airtight container or refrigerate to preserve natural crunch and flavor.' },
+        { q: 'Are your superfoods certified organic?', a: 'Yes! Our superfoods, maca, ashwagandha, nuts, and dried berries are 100% USDA Certified Organic, Non-GMO, and plant-based.' },
       ]
     }
   ];

@@ -1,8 +1,15 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
+
+interface StoryData {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  image?: string;
+}
 
 export default function BrandStory() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -11,9 +18,30 @@ export default function BrandStory() {
     offset: ['start end', 'end start']
   });
 
+  const [storyData, setStoryData] = useState<StoryData | null>(null);
+
+  useEffect(() => {
+    fetch('/api/content?page=home')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: unknown) => {
+        if (Array.isArray(data)) {
+          const found = data.find((item: { section?: string }) => item.section === 'brand_story' || item.section === 'story');
+          if (found) {
+            setStoryData(found);
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // Smooth background parallax scaling
   const backgroundY = useTransform(scrollYProgress, [0, 1], ['-10%', '10%']);
   const backgroundScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.1, 1.05, 1.0]);
+
+  const bgImage = storyData?.image || '/images/story_bg.png';
+  const subtitle = storyData?.subtitle || 'Our Promise';
+  const title = storyData?.title || 'Nurtured by Nature.\nDelivered Pure.';
+  const description = storyData?.description || 'We source directly from certified organic orchards across California, Kashmir, Arabia, and Iran to deliver farm-fresh dry fruits with zero additives or preservatives.';
 
   return (
     <section 
@@ -27,7 +55,7 @@ export default function BrandStory() {
         style={{ y: backgroundY, scale: backgroundScale }}
       >
         <Image 
-          src="/images/story_bg.png" 
+          src={bgImage} 
           alt="AERTH Brand Story" 
           fill
           sizes="100vw"
@@ -49,19 +77,13 @@ export default function BrandStory() {
             className="bg-black/40 backdrop-blur-md border border-white/10 p-8 md:p-12 text-white max-w-lg shadow-2xl rounded-2xl"
           >
             <span className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-white/70 font-semibold">
-              Our Story
+              {subtitle}
             </span>
-            <h2 className="text-xl md:text-2xl font-bold uppercase tracking-widest text-white mt-3 leading-snug">
-              Inspired by Air.
-              <br />
-              Grounded in Earth.
+            <h2 className="text-xl md:text-2xl font-bold uppercase tracking-widest text-white mt-3 leading-snug whitespace-pre-line">
+              {title}
             </h2>
-            <p className="text-zinc-300 text-xs md:text-sm mt-5 leading-relaxed tracking-wider font-light">
-              Air represents freedom, energy, and possibility.
-              <br className="hidden md:block" />
-              Earth represents strength, stability, and resilience.
-              <br className="hidden md:block" />
-              Between these forces exists every movement we make, every challenge we face, and every goal we pursue. That balance is the foundation of AERTH.
+            <p className="text-zinc-300 text-xs md:text-sm mt-5 leading-relaxed tracking-wider font-light whitespace-pre-line">
+              {description}
             </p>
           </motion.div>
 
@@ -70,3 +92,4 @@ export default function BrandStory() {
     </section>
   );
 }
+

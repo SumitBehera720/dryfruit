@@ -19,10 +19,10 @@ async function main() {
 
   // Create site settings
   const settings = [
-    { key: 'site_name', value: 'AERTH' },
+    { key: 'site_name', value: 'Organic Traditions' },
     { key: 'maintenance_mode', value: 'false' },
-    { key: 'free_shipping_threshold', value: '3999' },
-    { key: 'return_policy', value: '14-day hassle-free return and exchange policy.' },
+    { key: 'free_shipping_threshold', value: '1499' },
+    { key: 'return_policy', value: 'Freshness Guaranteed. 7-day hassle-free replacement or return.' },
   ];
   for (const s of settings) {
     await prisma.siteSetting.upsert({
@@ -34,11 +34,13 @@ async function main() {
 
   // Create categories
   const categories = [
-    { slug: 'leggings', name: 'Leggings', gender: 'women', sortOrder: 1 },
-    { slug: 'shorts', name: 'Shorts', gender: 'women', sortOrder: 2 },
-    { slug: 'bras', name: 'Sports Bras', gender: 'women', sortOrder: 3 },
-    { slug: 'tops', name: 'Training Tees', gender: 'men', sortOrder: 4 },
-    { slug: 'jackets', name: 'Track Jackets', gender: 'men', sortOrder: 5 },
+    { slug: 'nuts', name: 'Nuts & Kernels', gender: 'all', sortOrder: 1 },
+    { slug: 'dried-fruits', name: 'Dried Fruits & Dates', gender: 'all', sortOrder: 2 },
+    { slug: 'adaptogens', name: 'Adaptogens & Powders', gender: 'all', sortOrder: 3 },
+    { slug: 'elixirs', name: 'Functional Elixirs', gender: 'all', sortOrder: 4 },
+    { slug: 'seeds', name: 'Seeds & Mixes', gender: 'all', sortOrder: 5 },
+    { slug: 'trail-mixes', name: 'Trail Mixes & Snacks', gender: 'all', sortOrder: 6 },
+    { slug: 'gifting', name: 'Artisanal Gifting', gender: 'all', sortOrder: 7 },
   ];
   for (const c of categories) {
     await prisma.category.upsert({
@@ -49,171 +51,93 @@ async function main() {
   }
 
   // Create products with all data
-  const contourLeggings = await prisma.product.upsert({
-    where: { slug: 'contour-leggings' },
+  await prisma.product.upsert({
+    where: { slug: 'royal-californian-almonds' },
     update: {},
     create: {
-      slug: 'contour-leggings',
-      name: 'Contour Leggings',
-      price: 3599,
-      label: 'NEW',
-      category: 'leggings',
-      gender: 'women',
-      description: 'Engineered with a high-performance compression waistband, our signature Contour Leggings naturally shape and lift your silhouette. Squat-proof, breathable, and finished with a seamless fit that acts like a second skin.',
+      slug: 'royal-californian-almonds',
+      name: 'Royal Californian Mamra Almonds',
+      price: 899,
+      salePrice: 799,
+      label: 'BESTSELLER',
+      category: 'nuts',
+      gender: 'daily',
+      description: 'Handpicked premium Californian Mamra Almonds rich in Vitamin E, Magnesium, and plant-based protein. Slow-roasted to perfection for an irresistible crunch and buttery taste.',
       variants: {
         create: [
           {
-            colorName: 'Earthstone Plum',
-            hex: '#4A3546',
+            colorName: '500g Pack',
+            hex: '#D97706',
             image: '/images/product_plum_leggings.png',
-            images: JSON.stringify(['/images/product_plum_leggings.png', '/images/infographic_leggings.png', '/images/hero_bg.png']),
+            images: JSON.stringify(['/images/product_plum_leggings.png', '/images/hero_bg.png']),
           },
           {
-            colorName: 'Obsidian Black',
-            hex: '#181818',
+            colorName: '1kg Value Pack',
+            hex: '#92400E',
             image: '/images/product_black_leggings.png',
-            images: JSON.stringify(['/images/product_black_leggings.png', '/images/infographic_leggings.png']),
+            images: JSON.stringify(['/images/product_black_leggings.png']),
           },
         ],
       },
       details: {
         create: [
-          { text: '1.5cm higher waistband for added coverage', sortOrder: 1 },
-          { text: 'High compression waistband for tummy control', sortOrder: 2 },
-          { text: 'Invisible glute scrunch to naturally lift and shape', sortOrder: 3 },
-          { text: 'Squat-proof, four-way stretch fabric', sortOrder: 4 },
-          { text: 'Seamless finish prevents friction and irritation', sortOrder: 5 },
+          { text: '100% Raw, Organic & Sun-dried Mamra Almonds', sortOrder: 1 },
+          { text: 'Rich in Vitamin E, Omega-3 fatty acids, and Antioxidants', sortOrder: 2 },
+          { text: 'Boosts brain activity, memory retention, and heart health', sortOrder: 3 },
+          { text: 'Zero cholesterol, non-GMO, and gluten-free', sortOrder: 4 },
+          { text: 'Vacuum-sealed packaging to preserve natural freshness and crunch', sortOrder: 5 },
         ],
       },
       reviews: {
         create: [
-          { author: 'Sarah M.', rating: 5, date: new Date('2026-05-12'), title: 'Absolutely love the fit!', comment: 'These are the best leggings I own. The compression is perfect and they do not slide down during heavy squats. The plum color is stunning!', verified: true, approved: true },
-          { author: 'Neha R.', rating: 5, date: new Date('2026-06-02'), title: 'Actually squat proof!', comment: 'I was skeptical about the squat-proof claim, but these leggings are completely opaque. Material feels premium and soft.', verified: true, approved: true },
+          { author: 'Rohan Sharma', rating: 5, date: new Date('2026-06-15'), title: 'Superb quality and freshness!', comment: 'These almonds are noticeably larger and crunchier than regular store bought ones. Very crisp and buttery taste!', verified: true, approved: true },
         ],
       },
       questions: {
         create: [
-          { user: 'Pooja K.', question: 'Does the waistband roll down during workouts?', date: new Date('2026-05-20'), answer: 'Hi Pooja! The Contour Leggings feature a double-layered high-compression waistband that is designed to stay firmly in place without rolling down.' },
-        ],
-      },
-    },
-  });
-
-  const flareLeggings = await prisma.product.upsert({
-    where: { slug: 'aurora-flare-leggings' },
-    update: {},
-    create: {
-      slug: 'aurora-flare-leggings',
-      name: 'Aurora Flare Leggings',
-      price: 3799,
-      label: 'NEW',
-      category: 'leggings',
-      gender: 'women',
-      description: 'Transition seamlessly from the studio to the street. The Aurora Flare Leggings combine high-waisted support with a chic flared hemline, making them as versatile as they are comfortable.',
-      variants: {
-        create: [
-          {
-            colorName: 'Obsidian Black',
-            hex: '#181818',
-            image: '/images/product_black_flare.png',
-            images: JSON.stringify(['/images/product_black_flare.png', '/images/product_black_leggings.png']),
-          },
-        ],
-      },
-      details: {
-        create: [
-          { text: 'Flattering bootcut flare silhouette', sortOrder: 1 },
-          { text: 'Double-layer compression waistband', sortOrder: 2 },
-          { text: 'Ultra-soft brushed performance fabric', sortOrder: 3 },
-          { text: 'Moisture-wicking and quick-drying', sortOrder: 4 },
-          { text: 'Ideal for low to medium-impact activities', sortOrder: 5 },
-        ],
-      },
-      reviews: {
-        create: [
-          { author: 'Riya S.', rating: 5, date: new Date('2026-06-10'), title: 'Super flattering and comfy', comment: 'The flare is just right, and they hug my waist perfectly. Great for travel and yoga!', verified: true, approved: true },
-        ],
-      },
-      questions: {
-        create: [
-          { user: 'Tanya G.', question: 'Are these suitable for running?', date: new Date('2026-06-15'), answer: 'Hi Tanya! While they can be worn for runs, they are designed with yoga, training, and lifestyle wear in mind. For high-intensity runs, we recommend our classic compression Contour Leggings.' },
+          { user: 'Pooja K.', question: 'Are these almonds raw or roasted?', date: new Date('2026-06-18'), answer: 'Our Royal Mamra Almonds are 100% raw, unroasted, and free from any added salt or oils.' },
         ],
       },
     },
   });
 
   await prisma.product.upsert({
-    where: { slug: 'contour-shorts' },
+    where: { slug: 'king-jumbo-cashews' },
     update: {},
     create: {
-      slug: 'contour-shorts',
-      name: 'Contour Shorts 5"',
-      price: 2799,
-      label: 'NEW',
-      category: 'shorts',
-      gender: 'women',
-      description: 'Our signature sculpting technology in a mid-thigh active short. Designed to stay in place, prevent riding up, and shape your curves during high-intensity training.',
+      slug: 'king-jumbo-cashews',
+      name: 'King Jumbo W240 Cashews',
+      price: 999,
+      salePrice: 899,
+      label: 'PREMIUM',
+      category: 'nuts',
+      gender: 'daily',
+      description: 'Whole, unbroken W240 grade King Jumbo Cashews sourced directly from organic orchards. Naturally sweet, creamy, and packed with essential minerals.',
       variants: {
         create: [
           {
-            colorName: 'Obsidian Black',
-            hex: '#181818',
-            image: '/images/product_black_shorts.png',
-            images: JSON.stringify(['/images/product_black_shorts.png', '/images/product_black_leggings.png']),
+            colorName: '500g Pack',
+            hex: '#F59E0B',
+            image: '/images/product_black_flare.png',
+            images: JSON.stringify(['/images/product_black_flare.png']),
           },
         ],
       },
       details: {
         create: [
-          { text: '5-inch inseam prevents riding up', sortOrder: 1 },
-          { text: 'Glute sculpting contour design lines', sortOrder: 2 },
-          { text: 'High-rise compression waistband', sortOrder: 3 },
-          { text: 'Breathable, lightweight four-way stretch fabric', sortOrder: 4 },
-          { text: 'Zero front seam for clean lines', sortOrder: 5 },
+          { text: 'Grade W240 King Size Whole Cashew Nuts', sortOrder: 1 },
+          { text: 'Rich source of Zinc, Copper, and healthy monounsaturated fats', sortOrder: 2 },
+          { text: 'Creamy texture with no artificial flavorings or preservatives', sortOrder: 3 },
         ],
       },
       reviews: {
         create: [
-          { author: 'Kiara D.', rating: 4, date: new Date('2026-06-11'), title: 'Perfect for summer runs', comment: "Very comfortable and doesn't ride up! Docked one star because I wish there were side pockets.", verified: true, approved: true },
+          { author: 'Vikram Mehta', rating: 5, date: new Date('2026-06-10'), title: 'Huge size and rich taste', comment: 'Every single cashew in the box is whole and large. Premium quality packaging!', verified: true, approved: true },
         ],
       },
-    },
-  });
-
-  const mensTee = await prisma.product.upsert({
-    where: { slug: 'mens-aeroweave-tee' },
-    update: {},
-    create: {
-      slug: 'mens-aeroweave-tee',
-      name: 'AeroWeave Training Tee',
-      price: 2999,
-      label: 'NEW',
-      category: 'tops',
-      gender: 'men',
-      description: 'Engineered with high-ventilation AeroWeave mesh, this lightweight training tee offers maximum breathability and sweat-wicking performance for high-intensity training sessions. Features an athletic ergonomic cut for zero distractions.',
-      variants: {
+      questions: {
         create: [
-          {
-            colorName: 'Heather Grey',
-            hex: '#8C92AC',
-            image: '/images/product_mens_tee.png',
-            images: JSON.stringify(['/images/product_mens_tee.png']),
-          },
-          {
-            colorName: 'Obsidian Black',
-            hex: '#181818',
-            image: '/images/product_mens_tee.png',
-            images: JSON.stringify(['/images/product_mens_tee.png']),
-          },
-        ],
-      },
-      details: {
-        create: [
-          { text: 'Ultra-lightweight AeroWeave mesh fabric', sortOrder: 1 },
-          { text: 'Sweat-wicking, quick-drying performance yarn', sortOrder: 2 },
-          { text: 'Four-way stretch for unrestricted arm movement', sortOrder: 3 },
-          { text: 'Flatlock seams prevent chafing during high intensity reps', sortOrder: 4 },
-          { text: 'Classic minimalist crewneck design', sortOrder: 5 },
+          { user: 'Siddharth M.', question: 'Is there any salt added?', date: new Date('2026-06-12'), answer: 'No, these King Jumbo Cashews are completely plain and unsalted.' },
         ],
       },
     },
@@ -224,20 +148,20 @@ async function main() {
     {
       page: 'home',
       section: 'hero',
-      title: 'Made For Movement.',
-      subtitle: 'Built Between Air and Earth.',
-      description: 'Performance apparel that moves with you. Breathe freely. Stand firm. Progress always.',
+      title: 'Purity From Earth.',
+      subtitle: '100% Organic Dry Fruits & Superfoods.',
+      description: 'Handpicked raw almonds, jumbo cashews, dates, and artisanal superfoods packed fresh for your daily health.',
       image: '/images/hero_bg.png',
-      linkUrl: '/shop?gender=women',
-      linkText: 'Shop Women',
+      linkUrl: '/shop',
+      linkText: 'Explore Catalog',
       sortOrder: 1,
     },
     {
       page: 'home',
       section: 'brand_story',
-      title: 'Inspired by Air. Grounded in Earth.',
-      subtitle: 'Our Story',
-      description: 'Air represents freedom, energy, and possibility. Earth represents strength, stability, and resilience. Between these forces exists every movement we make, every challenge we face, and every goal we pursue. That balance is the foundation of AERTH.',
+      title: 'Nurtured by Nature. Delivered Pure.',
+      subtitle: 'Our Promise',
+      description: 'We source directly from certified organic orchards across California, Kashmir, Arabia, and Iran to deliver farm-fresh dry fruits with zero additives or preservatives.',
       image: '/images/story_bg.png',
       sortOrder: 2,
     },
@@ -250,32 +174,25 @@ async function main() {
   // Create journal posts
   const journalPosts = [
     {
-      title: 'Finding Balance: Between Air and Earth',
-      excerpt: 'How mindfulness and high-compression support transformed my morning yoga routine and mental stability.',
-      author: 'Priya Sharma',
-      category: 'Mindfulness',
+      title: '5 Daily Superfoods to Boost Immunity & Natural Energy',
+      excerpt: 'Discover how integrating raw almonds, walnuts, and chia seeds into your daily diet unlocks lasting energy.',
+      author: 'Dr. Ananya Roy',
+      category: 'Wellness',
       date: new Date('2026-06-25'),
     },
     {
-      title: 'Chasing Pace: Half-Marathon Training Essentials',
-      excerpt: 'Our runners break down the optimal fit of flare leggings and moisture-wicking bras over long-distance routes.',
-      author: 'Jessica Mercer',
-      category: 'Running',
+      title: 'Why Raw Walnuts & Almonds Are the Ultimate Brain Food',
+      excerpt: 'Scientific research highlights the cognitive benefits of Omega-3 rich dry fruits for focus and memory.',
+      author: 'Chef Kabir Sharma',
+      category: 'Nutrition',
       date: new Date('2026-06-18'),
     },
     {
-      title: 'Brutalist Architecture & High-Fashion Activewear',
-      excerpt: 'Exploring the aesthetic inspiration behind our latest colorways, concrete structures, and seamless silhouettes.',
-      author: 'AERTH Design Lab',
-      category: 'Design',
+      title: 'The Art of Artisanal Dry Fruit Gifting for Celebrations',
+      excerpt: 'How curated hampers of raw nuts, dates, and saffron elevate festive occasions and corporate gifting.',
+      author: 'AERTH Gourmet Lab',
+      category: 'Lifestyle',
       date: new Date('2026-05-29'),
-    },
-    {
-      title: 'The Evolution of Seamless Activewear Knitwear',
-      excerpt: 'How engineered knitting technology achieves zero friction, double density stretch, and structural panels without sewing seams.',
-      author: 'Dr. Elena Rostova',
-      category: 'Technology',
-      date: new Date('2026-04-14'),
     },
   ];
 

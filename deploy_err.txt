@@ -1,1 +1,0 @@
-C:\Users\Sumit\AppData\Local\Programs\Python\Python311\python.exe: can't find '__main__' module in 'D:\\new'

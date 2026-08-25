@@ -1,24 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import {
-  ArrowRight,
-  ShieldCheck,
-  Truck,
-  RefreshCw,
-  HelpCircle
-} from 'lucide-react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Logo from './Logo';
-
-interface FooterLink {
-  label: string;
-  url: string;
-}
+import { ArrowRight, Leaf, Check, Globe } from 'lucide-react';
 
 interface FooterColumn {
   title: string;
-  links: FooterLink[];
+  links: Array<{ label: string; url: string }>;
 }
 
 interface SocialLink {
@@ -27,254 +16,153 @@ interface SocialLink {
   icon: string;
 }
 
-interface FooterData {
-  socialLinks: SocialLink[];
-  columns: FooterColumn[];
-  copyright: string;
-}
-
-const socialIcons: Record<string, React.ReactNode> = {
-  instagram: (
-    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051C.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
-    </svg>
-  ),
-  facebook: (
-    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-    </svg>
-  ),
-  youtube: (
-    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-      <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-    </svg>
-  ),
-  pinterest: (
-    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.088 3.16 9.429 7.633 11.167-.07-.9-.12-2.27.02-3.23l1.19-5.07s-.3-.6-.3-1.48c0-1.39.8-2.42 1.8-2.42.85 0 1.26.64 1.26 1.41 0 .85-.54 2.13-.82 3.31-.23.99.49 1.8 1.47 1.8 1.77 0 3.13-1.87 3.13-4.57 0-2.39-1.72-4.06-4.17-4.06-2.85 0-4.51 2.13-4.51 4.33 0 .86.33 1.78.74 2.28a.3.3 0 0 1 .07.28l-.27 1.13c-.04.18-.15.23-.34.14-1.27-.59-2.07-2.44-2.07-3.93 0-3.19 2.32-6.13 6.69-6.13 3.51 0 6.24 2.5 6.24 5.85 0 3.49-2.2 6.3-5.26 6.3-.99 0-1.92-.51-2.24-1.11l-.61 2.33c-.22.85-.81 1.91-1.21 2.56 1.12.35 2.31.54 3.54.54 6.63 0 12-5.37 12-12S18.63 0 12 0z" />
-    </svg>
-  ),
-};
-
-const defaultFooter: FooterData = {
-  socialLinks: [
-    { platform: 'Instagram', url: '#', icon: 'instagram' },
-    { platform: 'Facebook', url: '#', icon: 'facebook' },
-    { platform: 'YouTube', url: '#', icon: 'youtube' },
-    { platform: 'Pinterest', url: '#', icon: 'pinterest' },
-  ],
-  columns: [
-    {
-      title: 'Shop',
-      links: [
-        { label: 'All Products', url: '/shop' },
-        { label: 'Women', url: '/shop?gender=women' },
-        { label: 'Men', url: '/shop?gender=men' },
-      ],
-    },
-    {
-      title: 'Company',
-      links: [
-        { label: 'About Us', url: '/about' },
-        { label: 'Contact Us', url: '/contact' },
-      ],
-    },
-    {
-      title: 'Help',
-      links: [
-        { label: 'FAQs', url: '/faqs' },
-        { label: 'Shipping', url: '/shipping' },
-        { label: 'Returns', url: '/returns' },
-        { label: 'Size Guide', url: '/size-guide' },
-        { label: 'Terms & Conditions', url: '/terms' },
-        { label: 'Privacy Policy', url: '/privacy' },
-      ],
-    },
-  ],
-  copyright: '© 2026, AERTH. All rights reserved.',
-};
-
 export default function Footer() {
-  const [data, setData] = useState<FooterData>(defaultFooter);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
-  const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetch('/api/footer')
-      .then(async (res) => res.ok ? res.json() : null)
-      .then((d) => { if (d) setData(d); })
-      .catch(() => {});
-  }, []);
+  const data = {
+    copyright: "© 2026 Organic Traditions. All rights reserved.",
+    socialLinks: [
+      { platform: "Instagram", url: "https://instagram.com", icon: "instagram" },
+      { platform: "Twitter", url: "https://twitter.com", icon: "twitter" },
+      { platform: "Facebook", url: "https://facebook.com", icon: "facebook" },
+      { platform: "YouTube", url: "https://youtube.com", icon: "youtube" },
+    ] as SocialLink[],
+    columns: [
+      {
+        title: "SHOP CATEGORIES",
+        links: [
+          { label: "Raw Nuts & Kernels", url: "/shop?category=nuts" },
+          { label: "Dried Superberries", url: "/shop?category=dried-fruits" },
+          { label: "Adaptogen Powders", url: "/shop?category=adaptogens" },
+          { label: "Functional Lattes", url: "/shop?category=elixirs" },
+          { label: "Festive Gift Hampers", url: "/shop?category=gifting" },
+        ]
+      },
+      {
+        title: "OUR PROMISE",
+        links: [
+          { label: "Our Sourcing Story", url: "/about" },
+          { label: "Regenerative Organic", url: "/sustainability" },
+          { label: "Vacuum Freshness Tech", url: "/technology" },
+          { label: "Farmer Co-operatives", url: "/impact" },
+        ]
+      },
+      {
+        title: "HELP & SUPPORT",
+        links: [
+          { label: "Shipping & Delivery", url: "/shipping" },
+          { label: "Track Your Order", url: "/track" },
+          { label: "Returns & Guarantee", url: "/returns" },
+          { label: "Contact Wellness Team", url: "/contact" },
+        ]
+      }
+    ] as FooterColumn[]
+  };
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      setError('Email is required');
-      return;
+    if (email.trim()) {
+      setSubscribed(true);
     }
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regex.test(email)) {
-      setError('Please enter a valid email');
-      return;
-    }
-
-    fetch('/api/newsletter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    }).catch(() => {});
-
-    setError('');
-    setSubscribed(true);
-    setEmail('');
-    setTimeout(() => {
-      setSubscribed(false);
-    }, 4000);
   };
 
-  const activeSocials = data.socialLinks.filter((s) => s.url && s.url !== '#');
-
   return (
-    <footer className="w-full bg-[#0c0c0c] text-white font-sans border-t border-zinc-900">
+    <footer className="w-full bg-[#FFFDF9] text-[#1E293B] pt-10 md:pt-12 pb-6 font-sans border-t border-stone-200">
+      
+      {/* Top Newsletter Banner */}
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 border-b border-stone-200 pb-8">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          
+          <div className="space-y-1 text-center md:text-left">
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C85A32]">
+              JOIN THE SUPERFOOD CIRCLE
+            </span>
+            <h3 className="text-xl md:text-2xl font-extrabold uppercase tracking-wider text-[#1E293B] font-serif">
+              Get 15% Off Your First Order
+            </h3>
+          </div>
 
-      {/* Bottom Trust Bar */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 border-b border-zinc-900 grid grid-cols-2 lg:grid-cols-4 gap-6 text-center lg:text-left">
-        <div className="flex flex-col lg:flex-row items-center gap-3">
-          <Truck className="w-5 h-5 text-white/80 stroke-[1.5]" />
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-white">Free Shipping</h4>
-            <p className="text-[10px] text-zinc-500 tracking-wider mt-0.5">On all orders above ₹3,999</p>
+          <div className="w-full md:w-auto min-w-[320px]">
+            {subscribed ? (
+              <div className="flex items-center justify-center gap-2 text-xs font-bold text-[#2D6A4F] bg-[#F2F7F2] py-3 px-6 rounded-xl border border-emerald-200">
+                <Check className="w-4 h-4" /> Welcome to Organic Traditions!
+              </div>
+            ) : (
+              <form onSubmit={handleSubscribe} className="flex gap-2">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-white border border-stone-300 text-xs text-[#1E293B] placeholder-stone-400 px-4 py-3 rounded-xl focus:outline-none focus:border-[#C85A32] flex-1 min-w-[200px] shadow-sm"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="bg-[#C85A32] hover:bg-[#B04C27] text-white font-bold text-xs uppercase tracking-widest px-5 py-3 rounded-xl transition-colors flex items-center gap-1.5 flex-shrink-0 shadow-md"
+                >
+                  Join <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </form>
+            )}
           </div>
-        </div>
-        <div className="flex flex-col lg:flex-row items-center gap-3">
-          <RefreshCw className="w-5 h-5 text-white/80 stroke-[1.5]" />
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-white">Easy Returns</h4>
-            <p className="text-[10px] text-zinc-500 tracking-wider mt-0.5">14-day return policy</p>
-          </div>
-        </div>
-        <div className="flex flex-col lg:flex-row items-center gap-3">
-          <ShieldCheck className="w-5 h-5 text-white/80 stroke-[1.5]" />
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-white">Secure Payments</h4>
-            <p className="text-[10px] text-zinc-500 tracking-wider mt-0.5">100% secure checkout</p>
-          </div>
-        </div>
-        <div className="flex flex-col lg:flex-row items-center gap-3">
-          <HelpCircle className="w-5 h-5 text-white/80 stroke-[1.5]" />
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-white">Customer Support</h4>
-            <p className="text-[10px] text-zinc-500 tracking-wider mt-0.5">We&apos;re here to help</p>
-          </div>
+
         </div>
       </div>
 
-      {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 md:gap-12">
-
-        {/* Brand Column */}
-        <div className="lg:col-span-3 space-y-4">
-          <Link href="/" className="block focus:outline-none" aria-label="AERTH Home">
-            <Logo className="h-6 text-white fill-none" />
-          </Link>
-          <p className="text-xs text-zinc-400 tracking-wider font-light">Move with the Elements.</p>
-          {activeSocials.length > 0 && (
-            <div className="flex gap-4 pt-2">
-              {activeSocials.map((social, idx) => (
+      {/* Main Footer Links */}
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          
+          {/* Brand Info */}
+          <div className="lg:col-span-2 space-y-3">
+            <Logo className="text-[#1E293B] h-7" />
+            <p className="text-xs text-slate-500 font-light leading-relaxed max-w-sm">
+              100% Regenerative Organic Certified, plant-based superfoods, raw nuts, adaptogen powders, and functional lattes.
+            </p>
+            <div className="flex gap-2.5 pt-1">
+              {data.socialLinks.map((s: SocialLink, idx: number) => (
                 <a
                   key={idx}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-zinc-900 border border-zinc-800 p-2.5 rounded-full hover:bg-zinc-800 hover:text-zinc-200 transition-colors"
-                  aria-label={social.platform}
+                  href={s.url}
+                  className="w-8 h-8 rounded-full bg-[#FFF5ED] border border-orange-100 flex items-center justify-center text-[#C85A32] hover:bg-[#C85A32] hover:text-white transition-colors"
+                  aria-label={s.platform}
                 >
-                  {socialIcons[social.icon] || socialIcons.instagram}
+                  <Globe className="w-3.5 h-3.5" />
                 </a>
               ))}
             </div>
-          )}
-        </div>
-
-        {/* Dynamic Link Columns */}
-        {data.columns.map((col, ci) => (
-          <div key={ci} className="lg:col-span-2">
-            <h4 className="text-xs font-bold uppercase tracking-[0.2em] mb-4 text-white">{col.title}</h4>
-            <ul className="space-y-2 text-xs text-zinc-400 font-light tracking-widest uppercase">
-              {col.links.filter((l) => l.label).map((link, li) => (
-                <li key={li}>
-                  <Link href={link.url} className="hover:text-white transition-colors">{link.label}</Link>
-                </li>
-              ))}
-            </ul>
           </div>
-        ))}
 
-        {/* Newsletter Column */}
-        <div className="lg:col-span-3 space-y-4">
-          <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-white">Stay Connected</h4>
-          <p className="text-xs text-zinc-400 font-light tracking-wider leading-relaxed">
-            New drops. Exclusive offers.
-          </p>
+          {/* Dynamic Link Columns */}
+          {data.columns.map((col: FooterColumn, idx: number) => (
+            <div key={idx} className="space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-[#C85A32] font-serif">
+                {col.title}
+              </h4>
+              <ul className="space-y-2 text-xs text-slate-600 font-light tracking-wide">
+                {col.links.map((link: { label: string; url: string }, lIdx: number) => (
+                  <li key={lIdx}>
+                    <Link href={link.url} className="hover:text-[#C85A32] transition-colors">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
 
-          <form onSubmit={handleSubscribe} className="relative mt-2">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setError('');
-              }}
-              placeholder="Enter your email"
-              className="w-full bg-zinc-900 border border-zinc-800 focus:outline-none focus:border-zinc-500 rounded-lg px-4 py-3.5 pr-12 text-xs font-sans text-white placeholder-zinc-500"
-            />
-            <button
-              type="submit"
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white text-black hover:bg-zinc-100 p-2 rounded-md transition-colors"
-              aria-label="Subscribe"
-            >
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </form>
-
-          {subscribed && (
-            <p className="text-[10px] text-green-500 font-semibold tracking-wider uppercase animate-pulse">
-              Thanks for subscribing!
-            </p>
-          )}
-          {error && (
-            <p className="text-[10px] text-red-500 font-semibold tracking-wider uppercase">
-              {error}
-            </p>
-          )}
-
-          {/* Payment Icons */}
-          <div className="pt-4 flex flex-wrap gap-2">
-            <span className="bg-zinc-950 border border-zinc-900 px-3 py-1 rounded text-[8px] font-bold tracking-widest text-zinc-400 uppercase">Visa</span>
-            <span className="bg-zinc-950 border border-zinc-900 px-3 py-1 rounded text-[8px] font-bold tracking-widest text-zinc-400 uppercase">Mastercard</span>
-            <span className="bg-zinc-950 border border-zinc-900 px-3 py-1 rounded text-[8px] font-bold tracking-widest text-zinc-400 uppercase">UPI</span>
-            <span className="bg-zinc-950 border border-zinc-900 px-3 py-1 rounded text-[8px] font-bold tracking-widest text-zinc-400 uppercase">G-Pay</span>
-          </div>
         </div>
-
       </div>
 
-      {/* Copyright Bar */}
-      <div className="w-full bg-[#080808] border-t border-zinc-900/60 py-6 text-center text-[10px] text-zinc-500 tracking-wider flex flex-col sm:flex-row justify-center items-center gap-2">
-        <span>{data.copyright}</span>
-        <span className="hidden sm:inline text-zinc-700">|</span>
-        <span>
-          Developed by{' '}
-          <a
-            href="https://qubnixtechnology.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-zinc-400 hover:text-white transition-colors underline underline-offset-4"
-          >
-            Qubnix Technology
-          </a>
-        </span>
+      {/* Compact Copyright Bar */}
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 border-t border-stone-200 pt-5 flex flex-col md:flex-row justify-between items-center text-[10px] text-slate-400 tracking-wider">
+        <p>{data.copyright}</p>
+        <div className="flex gap-4 mt-2 md:mt-0 font-semibold uppercase">
+          <Link href="/privacy" className="hover:text-slate-700">Privacy Policy</Link>
+          <Link href="/terms" className="hover:text-slate-700">Terms of Service</Link>
+        </div>
       </div>
 
     </footer>

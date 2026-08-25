@@ -2,11 +2,14 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { Sparkles, Heart, Zap, Sun, Flame, Leaf } from 'lucide-react';
 
 interface Category {
   title: string;
   subtitle: string;
+  link: string;
   image: string;
   icon: React.ReactNode;
 }
@@ -14,109 +17,107 @@ interface Category {
 export default function Categories() {
   const categories: Category[] = [
     {
-      title: 'Training',
-      subtitle: 'Push your limits',
-      image: '/images/cat_training.png',
-      icon: (
-        <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-        </svg>
-      )
+      title: 'Superfood Powders',
+      subtitle: 'Beets & Berries, Beetroot & Cranberry',
+      link: '/shop?category=superfood-powders',
+      image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/7d2f74bd-e0b5-4819-ac21-c3bfa725bd23.png',
+      icon: <Sparkles className="w-5 h-5 text-[#C85A32]" />
     },
     {
-      title: 'Running',
-      subtitle: 'Find your pace',
-      image: '/images/cat_running.png',
-      icon: (
-        <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A3 3 0 0118 4.817M15.362 5.214v3.6M15.362 5.214L18 8.1M18 4.817A3 3 0 0118 8.1M18 4.817v3.283M18 8.1l-1.5 1.5M16.5 9.6v4.35a3 3 0 01-1.317 2.474l-2.683 1.838a3 3 0 01-3.6-.283l-1.4-1.4M16.5 9.6l-2-2M14.5 7.6v2M14.5 7.6L12.5 5.6M12.5 5.6h-2.5M12.5 5.6V3" />
-        </svg>
-      )
+      title: 'Wellness Shots',
+      subtitle: 'Ginger Turmeric Orange Shots',
+      link: '/shop?category=wellness-shots',
+      image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/86b23630-70dc-4217-84a2-bb05b849de48.png',
+      icon: <Flame className="w-5 h-5 text-[#C85A32]" />
     },
     {
-      title: 'Yoga',
-      subtitle: 'Center your mind',
-      image: '/images/cat_yoga.png',
-      icon: (
-        <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.75 9.75 0 006.74-2.74L18 17.5a9.75 9.75 0 00-12 0l-.74.76A9.75 9.75 0 0012 21zM12 3a3 3 0 100 6 3 3 0 000-6z" />
-        </svg>
-      )
+      title: 'Herbal Teas & Lattes',
+      subtitle: 'Turmeric Ginger Golden Milk',
+      link: '/shop?category=herbal-teas',
+      image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/a2fc82bd-9691-489a-a82f-69518a23cf96.png',
+      icon: <Sun className="w-5 h-5 text-[#C85A32]" />
     },
     {
-      title: 'Outdoor',
-      subtitle: 'Explore more',
-      image: '/images/cat_outdoor.png',
-      icon: (
-        <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12.75 3.03v.568c0 .334.148.65.405.864l3.12 2.6c.465.387.498 1.096.068 1.522l-1.92 1.905c-.328.326-.777.49-1.236.452l-2.825-.235a1.5 1.5 0 00-1.246.495l-3.3 3.7a1.5 1.5 0 01-2.188.08L2.25 12" />
-        </svg>
-      )
+      title: 'Smoothie Boosters',
+      subtitle: 'Organic Celery & Kale Powders',
+      link: '/shop?category=smoothie-boosters',
+      image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/43deeea0-f7e9-4ddb-8a11-3fa466ef47da.png',
+      icon: <Leaf className="w-5 h-5 text-[#C85A32]" />
     },
     {
-      title: 'Lifestyle',
-      subtitle: 'Live in comfort',
-      image: '/images/cat_lifestyle.png',
-      icon: (
-        <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-        </svg>
-      )
+      title: 'Seeds & Boosters',
+      subtitle: 'Sprouted Fenugreek & Flax Seed',
+      link: '/shop?category=seeds-boosters',
+      image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/03fbf31b-61e4-45bc-8a22-e7a1c2f21ada.png',
+      icon: <Zap className="w-5 h-5 text-[#C85A32]" />
+    },
+    {
+      title: 'Dried Fruits & Snacks',
+      subtitle: 'Wild Blueberries & Apple Bites',
+      link: '/shop?category=dried-fruits',
+      image: 'https://cdn.zyrosite.com/cdn-ecommerce/store_01KQ6GEZ7W8BJAZT8GTJN32Y8K/assets/83979956-2864-4b17-956b-c1bcae5e8b51.jpg',
+      icon: <Heart className="w-5 h-5 text-[#C85A32]" />
     }
   ];
 
   return (
-    <section className="w-full bg-[#f9f9f9] py-16 md:py-24 font-sans text-black">
+    <section className="w-full bg-[#FFFDF9] py-16 md:py-24 font-sans text-[#1E293B]">
       <motion.div 
-        initial={{ opacity: 0, y: 50 }}
+        initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.8 }}
-        className="max-w-7xl mx-auto px-4 md:px-8"
+        className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10"
       >
         
-        {/* Header */}
-        <div className="mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold uppercase tracking-widest text-black">
-            Made For Every Moment
+        {/* Section Header */}
+        <div className="mb-12 text-center space-y-2">
+          <span className="text-[10px] md:text-xs uppercase tracking-[0.35em] text-[#C85A32] font-extrabold block">
+            CANADIAN CLEAN-LABEL NUTRITION
+          </span>
+          <h2 className="text-3xl md:text-5xl font-extrabold uppercase tracking-tight text-[#1E293B] font-serif">
+            Shop By Superfood Category
           </h2>
-          <div className="h-[2px] w-12 bg-black mt-3" />
+          <p className="text-xs md:text-sm text-slate-500 max-w-md mx-auto font-light tracking-wide">
+            100% natural dehydrated fruit & vegetable powders for daily smoothies, juices, and recipes.
+          </p>
         </div>
 
-        {/* 5-Column Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+        {/* 6-Column Responsive Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-5">
           {categories.map((cat) => (
-            <div 
+            <Link 
               key={cat.title}
-              className="relative aspect-[4/6] bg-zinc-800 rounded-xl overflow-hidden shadow-md group cursor-pointer"
+              href={cat.link}
+              className="relative aspect-[3/5] bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl group cursor-pointer block border border-stone-200/80 hover:border-[#C85A32]/60 transition-all duration-300"
             >
-              {/* Image */}
+              {/* Category Image */}
               <div className="absolute inset-0">
                 <Image 
                   src={cat.image} 
                   alt={cat.title} 
                   fill
-                  sizes="(max-w-768px) 50vw, 20vw"
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                  sizes="(max-w-768px) 50vw, 16vw"
+                  className="object-contain p-3 transition-transform duration-700 ease-out group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 transition-opacity duration-300 group-hover:opacity-85" />
+                <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent transition-opacity duration-300 group-hover:opacity-90" />
               </div>
 
-              {/* Icon Overlay (top center/left) */}
-              <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm p-2 rounded-full border border-white/15 opacity-80 group-hover:opacity-100 group-hover:bg-white/20 transition-all duration-300">
+              {/* Category Icon Badge */}
+              <div className="absolute top-3.5 left-3.5 bg-[#FFF5ED] backdrop-blur-md p-2 rounded-full border border-orange-200/80 opacity-90 group-hover:opacity-100 transition-all duration-300 shadow-sm">
                 {cat.icon}
               </div>
 
-              {/* Text Bottom Content */}
-              <div className="absolute inset-x-4 bottom-5 text-white flex flex-col items-center text-center">
-                <h3 className="text-xs md:text-sm font-bold uppercase tracking-[0.2em]">
+              {/* Bottom Card Labels */}
+              <div className="absolute inset-x-3 bottom-4 text-[#1E293B] flex flex-col items-center text-center">
+                <h3 className="text-xs md:text-sm font-extrabold uppercase tracking-wider font-serif leading-snug">
                   {cat.title}
                 </h3>
-                <p className="text-[9px] md:text-[10px] text-zinc-300 uppercase tracking-widest mt-1 font-light opacity-80 transition-transform duration-500 group-hover:translate-y-[-2px] group-hover:opacity-100">
+                <p className="text-[9px] text-[#C85A32] uppercase tracking-widest mt-1 font-bold opacity-90 transition-transform duration-300 group-hover:translate-y-[-2px] group-hover:opacity-100 line-clamp-2">
                   {cat.subtitle}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

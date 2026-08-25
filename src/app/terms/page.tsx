@@ -6,12 +6,12 @@ import Footer from '@/components/Footer';
 
 export default function TermsPage() {
   const sections = [
-    { title: '1. Agreement to Terms', text: 'By accessing or purchasing from our website palevioletred-turtle-524259.hostingersite.com, you agree to be bound by these Terms and Conditions. If you do not agree to all terms, please refrain from using our services.' },
+    { title: '1. Agreement to Terms', text: 'By accessing or purchasing from our website yourdomain.com, you agree to be bound by these Terms and Conditions. If you do not agree to all terms, please refrain from using our services.' },
     { title: '2. Product Description & Prices', text: 'We strive for accuracy in product details, descriptions, and pricing. In the event of a listing error, we reserve the right to correct pricing errors, cancel orders, or refuse service.' },
     { title: '3. Orders & Payment', text: 'All orders are subject to availability and acceptance. Payment details must be valid. We reserve the right to decline transactions that show signs of fraudulent activity.' },
     { title: '4. Shipping & Delivery', text: 'Delivery timelines are estimates. We are not liable for packages delayed by courier partners or international customs processes.' },
-    { title: '5. Intellectual Property', text: 'All content, logos, graphics, text, and product designs on this site are the exclusive property of AERTH Sportswear and are protected under international copyright and trademark laws.' },
-    { title: '6. Limitation of Liability', text: 'AERTH Sportswear is not liable for indirect, incidental, or consequential damages resulting from the use or inability to use our products or services.' }
+    { title: '5. Intellectual Property', text: 'All content, logos, graphics, text, and product packaging designs on this site are the exclusive property of Just Naturals and are protected under international copyright laws.' },
+    { title: '6. Limitation of Liability', text: 'Just Naturals is not liable for indirect, incidental, or consequential damages resulting from the use or consumption of our products.' }
   ];
 
   return (
@@ -25,14 +25,14 @@ export default function TermsPage() {
             <span className="text-xs uppercase tracking-[0.3em] text-zinc-500 font-bold block">Legal agreement</span>
             <h1 className="text-3xl md:text-5xl font-extrabold uppercase tracking-widest text-black">Terms & Conditions</h1>
             <p className="text-zinc-500 text-xs md:text-sm tracking-wide leading-relaxed font-light uppercase">
-              Last updated: July 2026. Please read our service agreement terms carefully.
+              Last updated: August 2026. Please read our service agreement terms carefully.
             </p>
           </div>
 
           {/* Content Document */}
           <div className="bg-white border border-zinc-100 rounded-2xl shadow-sm p-8 md:p-12 space-y-8">
             <p className="text-xs text-zinc-500 font-light leading-relaxed uppercase tracking-wider">
-              Welcome to AERTH Sportswear. These Terms and Conditions govern your relationship and usage of the site and products provided by AERTH.
+              Welcome to Just Naturals. These Terms and Conditions govern your relationship and usage of the site and products provided by Just Naturals.
             </p>
             
             <div className="space-y-6">
@@ -47,7 +47,7 @@ export default function TermsPage() {
             </div>
 
             <div className="border-t border-zinc-100 pt-6 text-[11px] text-zinc-400 font-light">
-              For any questions regarding these Terms & Conditions, please contact us at support@aerth.sport.
+              For any questions regarding these Terms & Conditions, please contact us at support@justnaturals.com.
             </div>
           </div>
 

@@ -1,16 +1,16 @@
-# Server
+# Server Deployment Configuration Template
 
 Website:
-palevioletred-turtle-524259.hostingersite.com
+yourdomain.com
 
 SSH
-Host/IP: 145.79.58.122
-Port: 65002
-Username: u892283443
-Password: Qubnix123@
+Host/IP: your-server-ip
+Port: 22
+Username: your-username
+Password: your-password
 
 MySQL
 Host: localhost
-Database: u892283443_aerth
-Username: u892283443_aerth
-Password: Qubnix123@
+Database: your-database-name
+Username: your-database-user
+Password: your-database-password

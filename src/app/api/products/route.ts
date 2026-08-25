@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query } from '@/lib/db';
+import { query, withTransaction } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { getCachedProducts } from '@/lib/products-store';
 
@@ -93,43 +93,67 @@ export async function POST(request: NextRequest) {
 
   const data = await request.json();
 
-  try {
-    await query(
-      'INSERT INTO Product (slug, name, price, salePrice, label, category, gender, description, active, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW())',
-      [data.slug, data.name, parseFloat(data.price), data.salePrice ? parseFloat(data.salePrice) : null, data.label || null, data.category, data.gender, data.description]
-    );
-    const created = await query<ProductRow>('SELECT * FROM Product ORDER BY id DESC LIMIT 1');
-    const product = created[0];
-    if (!product) throw new Error('Insert failed');
+  // Input validation
+  if (!data.name || typeof data.name !== 'string' || data.name.trim() === '') {
+    return NextResponse.json({ error: 'Product name is required' }, { status: 400 });
+  }
+  if (!data.category || typeof data.category !== 'string' || data.category.trim() === '') {
+    return NextResponse.json({ error: 'Product category is required' }, { status: 400 });
+  }
+  const priceNum = parseFloat(data.price);
+  if (isNaN(priceNum) || priceNum < 0) {
+    return NextResponse.json({ error: 'Valid positive price is required' }, { status: 400 });
+  }
 
-    const variants = data.variants && data.variants.length > 0 ? data.variants : [{
-      colorName: 'Default', hex: '#000000', image: data.image || '', images: data.image ? [data.image] : [], stock: 10,
-    }];
-    for (const v of variants) {
-      await query(
-        'INSERT INTO ProductVariant (productId, colorName, hex, image, images, stock) VALUES (?, ?, ?, ?, ?, ?)',
-        [product.id, v.colorName, v.hex, v.image, v.images ? JSON.stringify(v.images) : JSON.stringify(v.image ? [v.image] : []), v.stock ?? 10]
+  const slug = (data.slug && typeof data.slug === 'string' && data.slug.trim() !== '')
+    ? data.slug.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-')
+    : data.name.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+
+  try {
+    const resultProduct = await withTransaction(async (conn) => {
+      const [insertRes] = await conn.execute(
+        'INSERT INTO Product (slug, name, price, salePrice, label, category, gender, description, active, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW())',
+        [
+          slug,
+          data.name.trim(),
+          priceNum,
+          data.salePrice ? parseFloat(data.salePrice) : null,
+          data.label || null,
+          data.category.trim(),
+          data.gender || 'unisex',
+          data.description || '',
+        ]
       );
-    }
-    const createdVariants = await query<VariantRow>('SELECT * FROM ProductVariant WHERE productId = ?', [product.id]);
-    return NextResponse.json({ ...product, variants: createdVariants }, { status: 201 });
-  } catch {
-    const cached = getCachedProducts();
-    const newId = cached.length > 0 ? Math.max(...cached.map(p => p.id)) + 1 : 1;
-    const newProduct = {
-      id: newId, slug: data.slug || '', name: data.name || '', price: parseFloat(data.price) || 0,
-      salePrice: data.salePrice ? parseFloat(data.salePrice) : null, label: data.label || null,
-      category: data.category || '', gender: data.gender || '', active: true,
-      description: data.description || '',
-      variants: (data.variants && data.variants.length > 0 ? data.variants : [{
-        colorName: 'Default', hex: '#000000', image: data.image || '', images: JSON.stringify(data.image ? [data.image] : []), stock: 10,
-      }]).map((v: { colorName: string; hex: string; image: string; images?: string[]; stock?: number }, i: number) => ({
-        id: i + 1, colorName: v.colorName, hex: v.hex, image: v.image,
-        images: v.images ? JSON.stringify(v.images) : JSON.stringify(v.image ? [v.image] : []), stock: v.stock ?? 10,
-      })),
-      details: [], reviews: [], questions: [],
-    };
-    cached.push(newProduct);
-    return NextResponse.json(newProduct, { status: 201 });
+      const productId = (insertRes as { insertId: number }).insertId;
+
+      const variants = data.variants && data.variants.length > 0 ? data.variants : [{
+        colorName: 'Default', hex: '#000000', image: data.image || '', images: data.image ? [data.image] : [], stock: 10,
+      }];
+
+      for (const v of variants) {
+        await conn.execute(
+          'INSERT INTO ProductVariant (productId, colorName, hex, image, images, stock) VALUES (?, ?, ?, ?, ?, ?)',
+          [
+            productId,
+            v.colorName || 'Default',
+            v.hex || '#000000',
+            v.image || '',
+            v.images ? JSON.stringify(v.images) : JSON.stringify(v.image ? [v.image] : []),
+            v.stock ?? 10
+          ]
+        );
+      }
+
+      const [productRows] = await conn.execute('SELECT * FROM Product WHERE id = ?', [productId]);
+      const product = (productRows as ProductRow[])[0];
+      const [variantRows] = await conn.execute('SELECT * FROM ProductVariant WHERE productId = ?', [productId]);
+      return { ...product, variants: variantRows as VariantRow[] };
+    });
+
+    return NextResponse.json(resultProduct, { status: 201 });
+  } catch (err) {
+    const error = err as Error;
+    console.error('[ERROR] Products POST error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to create product' }, { status: 500 });
   }
 }

@@ -78,31 +78,56 @@ export default function AdminContentPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold uppercase tracking-widest text-black">Content Sections</h1>
-          <p className="text-zinc-500 text-xs tracking-wider mt-1">Manage homepage & site content</p>
+          <p className="text-zinc-500 text-xs tracking-wider mt-1">Manage Homepage & Shop page banners, headers, and text</p>
         </div>
         <button
-          onClick={() => { setEditing(null); setForm({ page: 'home', section: '', title: '', subtitle: '', description: '', image: '', linkUrl: '', linkText: '', sortOrder: 0 }); setShowForm(true); }}
+          onClick={() => { setEditing(null); setForm({ page: 'home', section: 'hero', title: '', subtitle: '', description: '', image: '', linkUrl: '', linkText: '', sortOrder: 0 }); setShowForm(true); }}
           className="flex items-center gap-2 bg-black text-white text-xs font-bold uppercase tracking-widest px-4 py-2.5 rounded-lg hover:bg-zinc-800"
         >
           <Plus className="w-4 h-4" /> Add Section
         </button>
       </div>
 
+      {/* Helper guide card */}
+      <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-4 text-xs space-y-2">
+        <p className="font-bold text-black uppercase tracking-wider">💡 How to update website banners & sections:</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-zinc-600">
+          <div className="bg-white p-2.5 rounded border border-zinc-200">
+            <span className="font-bold text-black block">🖼️ Homepage Hero Banner</span>
+            Set Page = <code className="bg-zinc-100 px-1 py-0.5 rounded text-black font-semibold">home</code>, Section = <code className="bg-zinc-100 px-1 py-0.5 rounded text-black font-semibold">hero</code>
+          </div>
+          <div className="bg-white p-2.5 rounded border border-zinc-200">
+            <span className="font-bold text-black block">📖 Brand Story Section</span>
+            Set Page = <code className="bg-zinc-100 px-1 py-0.5 rounded text-black font-semibold">home</code>, Section = <code className="bg-zinc-100 px-1 py-0.5 rounded text-black font-semibold">brand_story</code>
+          </div>
+          <div className="bg-white p-2.5 rounded border border-zinc-200">
+            <span className="font-bold text-black block">🛍️ Shop Collection Banners</span>
+            Set Page = <code className="bg-zinc-100 px-1 py-0.5 rounded text-black font-semibold">shop</code>, Section = <code className="bg-zinc-100 px-1 py-0.5 rounded text-black font-semibold">banner_all / banner_men / banner_women</code>
+          </div>
+        </div>
+      </div>
+
       <div className="space-y-4">
         {content.map((item) => (
-          <div key={item.id} className="bg-white border border-zinc-200 rounded-xl p-5 flex items-start justify-between">
-            <div className="space-y-1">
+          <div key={item.id} className="bg-white border border-zinc-200 rounded-xl p-5 flex items-center justify-between gap-4">
+            {item.image && (
+              <div className="w-16 h-16 rounded-lg overflow-hidden border border-zinc-200 flex-shrink-0 bg-zinc-100 relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={item.image} alt="" className="w-full h-full object-cover" />
+              </div>
+            )}
+            <div className="space-y-1 flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold uppercase text-zinc-400 bg-zinc-100 px-2 py-0.5 rounded">{item.page}</span>
-                <span className="text-[10px] font-bold uppercase text-zinc-400">{item.section}</span>
+                <span className="text-[10px] font-bold uppercase text-zinc-600 bg-zinc-100 px-2 py-0.5 rounded">{item.page}</span>
+                <span className="text-[10px] font-bold uppercase text-black bg-zinc-200/70 px-2 py-0.5 rounded">{item.section}</span>
                 {!item.active && <span className="text-[8px] font-bold uppercase text-red-500 bg-red-50 px-1.5 py-0.5 rounded">Inactive</span>}
               </div>
-              <p className="text-xs font-semibold text-black">{item.title || 'Untitled'}</p>
-              {item.subtitle && <p className="text-[10px] text-zinc-500">{item.subtitle}</p>}
-              <p className="text-[10px] text-zinc-400">Order: {item.sortOrder}</p>
+              <p className="text-xs font-semibold text-black truncate">{item.title || 'Untitled'}</p>
+              {item.subtitle && <p className="text-[10px] text-zinc-500 truncate">{item.subtitle}</p>}
+              {item.description && <p className="text-[10px] text-zinc-400 truncate max-w-md">{item.description}</p>}
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => startEdit(item)} className="p-1.5 text-zinc-400 hover:text-black"><Edit2 className="w-3.5 h-3.5" /></button>
+              <button onClick={() => startEdit(item)} className="px-3 py-1.5 text-xs font-semibold border border-zinc-200 rounded-lg hover:bg-zinc-50 flex items-center gap-1.5"><Edit2 className="w-3.5 h-3.5" /> Edit</button>
               <button onClick={() => handleDelete(item.id)} className="p-1.5 text-zinc-400 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
             </div>
           </div>
@@ -117,20 +142,49 @@ export default function AdminContentPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Page</label>
                   <select value={form.page} onChange={(e) => setForm({ ...form, page: e.target.value })} className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black">
-                    <option value="home">Home</option><option value="about">About</option><option value="technology">Technology</option>
-                  </select></div>
-                <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Section</label>
-                  <input required value={form.section} onChange={(e) => setForm({ ...form, section: e.target.value })} placeholder="hero" className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black" /></div>
+                    <option value="home">Home</option>
+                    <option value="shop">Shop</option>
+                    <option value="about">About</option>
+                    <option value="technology">Technology</option>
+                  </select>
+                </div>
+                <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Section Name</label>
+                  <select
+                    value={['hero', 'brand_story', 'banner_all', 'banner_men', 'banner_women'].includes(form.section) ? form.section : 'custom'}
+                    onChange={(e) => {
+                      if (e.target.value !== 'custom') setForm({ ...form, section: e.target.value });
+                    }}
+                    className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black"
+                  >
+                    <option value="hero">Hero Main Banner (home &rarr; hero)</option>
+                    <option value="brand_story">Brand Story Banner (home &rarr; brand_story)</option>
+                    <option value="banner_all">Shop Banner All (shop &rarr; banner_all)</option>
+                    <option value="banner_men">Shop Banner Men (shop &rarr; banner_men)</option>
+                    <option value="banner_women">Shop Banner Women (shop &rarr; banner_women)</option>
+                    <option value="custom">Custom Section Name...</option>
+                  </select>
+                </div>
               </div>
-              <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Title</label>
-                <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black" /></div>
-              <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Subtitle</label>
-                <input value={form.subtitle} onChange={(e) => setForm({ ...form, subtitle: e.target.value })} className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black" /></div>
-              <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Description</label>
-                <textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black" /></div>
-              <ImageUpload value={form.image} onChange={(url) => setForm({ ...form, image: url })} label="Image" />
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold uppercase text-zinc-500">Exact Section Identifier</label>
+                <input required value={form.section} onChange={(e) => setForm({ ...form, section: e.target.value })} placeholder="hero" className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black" />
+              </div>
+
+              <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Banner Title / Heading</label>
+                <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Made For Movement" className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black" /></div>
+              
+              <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Banner Subtitle / Tag</label>
+                <input value={form.subtitle} onChange={(e) => setForm({ ...form, subtitle: e.target.value })} placeholder="e.g. Built Between Air and Earth" className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black" /></div>
+              
+              <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Banner Description Text</label>
+                <textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Performance apparel that moves with you..." className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black" /></div>
+              
+              <ImageUpload value={form.image} onChange={(url) => setForm({ ...form, image: url })} label="Banner Image (Upload or Paste URL)" />
+              
               <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Sort Order</label>
                 <input type="number" value={form.sortOrder} onChange={(e) => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })} className="w-full border border-zinc-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-black" /></div>
+              
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowForm(false)} className="flex-1 border border-zinc-200 text-zinc-600 text-xs font-bold uppercase tracking-widest py-3 rounded-lg hover:bg-zinc-50">Cancel</button>
                 <button type="submit" className="flex-1 bg-black text-white text-xs font-bold uppercase tracking-widest py-3 rounded-lg hover:bg-zinc-800">{editing ? 'Update' : 'Create'}</button>
@@ -142,3 +196,4 @@ export default function AdminContentPage() {
     </div>
   );
 }
+

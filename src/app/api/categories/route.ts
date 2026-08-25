@@ -24,8 +24,10 @@ export async function POST(request: NextRequest) {
       [data.name, data.slug, data.gender, data.sortOrder ?? 0]);
     const created = await query<CategoryRow>('SELECT * FROM Category WHERE slug = ? LIMIT 1', [data.slug]);
     return NextResponse.json(created[0], { status: 201 });
-  } catch {
-    return NextResponse.json({ error: 'Failed to create category' }, { status: 500 });
+  } catch (err) {
+    const error = err as Error;
+    console.error('[ERROR] Categories POST error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to create category' }, { status: 500 });
   }
 }
 
@@ -39,8 +41,10 @@ export async function PUT(request: NextRequest) {
       [data.name, data.slug, data.gender, data.sortOrder, data.id]);
     const updated = await query<CategoryRow>('SELECT * FROM Category WHERE id = ? LIMIT 1', [data.id]);
     return NextResponse.json(updated[0]);
-  } catch {
-    return NextResponse.json({ error: 'Failed to update category' }, { status: 500 });
+  } catch (err) {
+    const error = err as Error;
+    console.error(`[ERROR] Categories PUT error for ID ${request.url}:`, error);
+    return NextResponse.json({ error: error.message || 'Failed to update category' }, { status: 500 });
   }
 }
 
@@ -52,7 +56,9 @@ export async function DELETE(request: NextRequest) {
     const { id } = await request.json();
     await query('DELETE FROM Category WHERE id = ?', [parseInt(id)]);
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: 'Failed to delete category' }, { status: 500 });
+  } catch (err) {
+    const error = err as Error;
+    console.error('[ERROR] Categories DELETE error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to delete category' }, { status: 500 });
   }
 }
