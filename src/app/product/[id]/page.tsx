@@ -226,7 +226,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   // Safe Variant list fallback
   const variantsList: Variant[] = (product.variants && Array.isArray(product.variants) && product.variants.length > 0)
     ? product.variants
-    : [{ id: 1, colorName: 'Standard Pack', hex: '#C85A32', image: (product as any).image || '', gallery: '[]', stock: 10 }];
+    : [{ id: 1, colorName: 'Standard Pack', hex: '#C85A32', image: (product as { image?: string }).image || '', gallery: '[]', stock: 10 }];
 
   const activeVariant = variantsList[activeVariantIdx] || variantsList[0];
 
@@ -235,8 +235,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   try {
     if (typeof activeVariant.gallery === 'string') {
       images = JSON.parse(activeVariant.gallery);
-    } else if (Array.isArray((activeVariant as any).images)) {
-      images = (activeVariant as any).images;
+    } else if (Array.isArray((activeVariant as Record<string, unknown>).images)) {
+      images = (activeVariant as Record<string, unknown>).images as string[];
     }
   } catch {
     images = [];
