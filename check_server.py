@@ -1,9 +1,9 @@
 import paramiko, os
 
-SSH_HOST = os.getenv('SSH_HOST', 'your-server-ip')
-SSH_PORT = int(os.getenv('SSH_PORT', '22'))
-SSH_USER = os.getenv('SSH_USER', 'your-username')
-SSH_PASS = os.getenv('SSH_PASS', 'your-password')
+SSH_HOST = os.getenv('SSH_HOST', '145.79.58.122')
+SSH_PORT = int(os.getenv('SSH_PORT', '65002'))
+SSH_USER = os.getenv('SSH_USER', 'u892283443')
+SSH_PASS = os.getenv('SSH_PASS', 'Qubnix123@')
 REMOTE_PATH = os.getenv('REMOTE_PATH', f'/home/{SSH_USER}/frontend')
 
 c = paramiko.SSHClient()
